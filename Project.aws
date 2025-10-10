@@ -1,0 +1,11 @@
+[Version]
+Version=15.0
+[Designs]
+ese345_project=.\ESE345_Project\ESE345_Project.adf
+[Browser]
+sort=order
+mode=none
+[Order]
+order=1
+[Expand]
+ese345_project=1

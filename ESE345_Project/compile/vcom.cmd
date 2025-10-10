@@ -1,0 +1,1 @@
+-w -d C:/Users/jinyc/Downloads/ESE345/Project/ESE345_Project/compile -s C:/Users/jinyc/Downloads/ESE345/Project/library.cfg -j C:/Users/jinyc/Downloads/ESE345/Project/ESE345_Project/projlib.cfg -work ESE345_Project -O3 -e 100 -work ESE345_Project -2002 C:/Users/jinyc/Downloads/ESE345/Project/ESE345_Project/src/Procedure/opcode_rest.vhd 
