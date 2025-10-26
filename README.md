@@ -1,4 +1,4 @@
-# Pipelined SIMD multimedia unit Design with the VHDL/Verilog Hardware description language
+# Pipelined SIMD multimedia unit Design with the VHDL/Verilog
 
 ## Prokect Description
 This project focuses on the structural and behavioral design of a four-stage pipelined Multimedia Unit (MMU). The design is implemented using VHDL, a hardware description language, to model the MMU with a reduced subset of multimedia instructions, similar to those in Sony Cell SPU and Intel SSE architectures.
