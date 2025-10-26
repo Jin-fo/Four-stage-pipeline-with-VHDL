@@ -1,4 +1,18 @@
 # Pipelined SIMD multimedia unit Design with the VHDL/Verilog Hardware description language
+
+## Prokect Description
 This project focuses on the structural and behavioral design of a four-stage pipelined Multimedia Unit (MMU). The design is implemented using VHDL, a hardware description language, to model the MMU with a reduced subset of multimedia instructions, similar to those in Sony Cell SPU and Intel SSE architectures.
   
 Each module or entity within the four-stage pipeline are designed and verified individually with their respective self-checking test benches. This will ensure the functional correctness of each components prior to full system integration of the MMU. The complete top-level MMU model is then instantiated with another test bench to validate the completeness of the four-stage pipeline, where each instruction will cycle through all stages of the pipeline. The resulting outputs demonstrate the operational behavior and status of each pipeline stage during execution.
+
+##Overview
+This paper presents Part I of the Final Report, focusing exclusively on the architecture
+of the Multimedia ALU during the execution stage. At this phase, no prior knowledge
+of the complete pipeline design is required for implementing the Multimedia ALU module.
+The ALU is assumed to have received all the correct and necessary input signals as provided
+through the complete pipeline up to the stage following the forwarding unit.
+A behavioral model approach will be employed to design the test bench for the Multimedia
+ALU. With this approach, the expected results for each test case are predetermined to facil-
+itate the self-checking aspect of the test bench design. The direct comparison between the
+ALU’s computed outputs and the expected result ensure accurate functional verification for
+the instruction sets.
