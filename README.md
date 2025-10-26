@@ -5,7 +5,7 @@ This project focuses on the structural and behavioral design of a four-stage pip
   
 Each module or entity within the four-stage pipeline are designed and verified individually with their respective self-checking test benches. This will ensure the functional correctness of each components prior to full system integration of the MMU. The complete top-level MMU model is then instantiated with another test bench to validate the completeness of the four-stage pipeline, where each instruction will cycle through all stages of the pipeline. The resulting outputs demonstrate the operational behavior and status of each pipeline stage during execution.
 
-##Overview
+## Overview
 This paper presents Part I of the Final Report, focusing exclusively on the architecture
 of the Multimedia ALU during the execution stage. At this phase, no prior knowledge
 of the complete pipeline design is required for implementing the Multimedia ALU module.
