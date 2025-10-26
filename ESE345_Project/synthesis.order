@@ -1,9 +1,0 @@
-i<>.\src\ALU.vhd
-i<>.\src\load_immediate.vhd
-i<>.\src\multiply-add.vhd
-i<>.\src\opcode-rest.vhd
-i<>.\src\Instruction_Formate.vhd
-i<>.\src\multiple_add.vhd
-i<>.\src\opcode_rest.vhd
-i<>.\src\load_immediate_tb.vhd
-i<>.\src\multiple_add_tb.vhd

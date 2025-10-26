@@ -1,6 +1,0 @@
-.\src\Multimedia_ALU.vhd
-.\src\Package\parsing_format.vhd
-.\src\Procedure\opcode_rest.vhd
-.\src\Procedure\saturate_fun.vhd
-.\src\Procedure\load_immediate.vhd
-.\src\Test_bench\Multimedia_ALU_tb.vhd
