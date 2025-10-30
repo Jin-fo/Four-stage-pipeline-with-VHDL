@@ -4,10 +4,10 @@ use ieee.numeric_std.all;
 use work.numeric_var.all;
 use work.all;
 
-entity alu_LDI_tb is 
-end alu_LDI_tb;
+entity mmu_LDI_tb is 
+end mmu_LDI_tb;
 
-architecture test_bench of alu_LDI_tb is 
+architecture test_bench of mmu_LDI_tb is 
 	-- Control FLAG
     signal write_flag  : std_logic := '0';
 
@@ -128,4 +128,5 @@ begin
         report "TEST COMPLETED: load_immediate w/ indexing" severity warning;
 	end process;				
 end test_bench;
+
 
