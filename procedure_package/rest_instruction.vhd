@@ -81,9 +81,8 @@ package body rest_instruction is
 	            temp_out := in_PORT2 or in_PORT1;
 	
 	        when "0110" => --broadcast word
-	            vector32 := in_PORT1(REGISTER_LENGTH-1 downto REGISTER_LENGTH-32);
 	            for i in 0 to 3 loop
-	                temp_out(32*(i+1)-1 downto i*32) := vector32;
+	                temp_out(32*(i+1)-1 downto i*32) := in_PORT1(REGISTER_LENGTH-1 downto REGISTER_LENGTH-32);
 	            end loop;
 	
 	        when "0111" => -- max signed word
@@ -146,7 +145,7 @@ package body rest_instruction is
 	        when "1101" => --rotate bits in word
 	            for i in 0 to 3 loop
 	                vector32 := in_PORT1(32*(i+1)-1 downto i*32);
-	                int_var := to_integer(unsigned(in_immed(4 downto 0))) mod 32;
+	                int_var := to_integer(unsigned(in_PORT2(32*(i+1)-27-1 downto i*32))) mod 32;
 	                if int_var = 0 then
 	                    temp_out(32*(i+1)-1 downto 32*i) := vector32;
 	                else
@@ -182,4 +181,3 @@ package body rest_instruction is
 				
 	end procedure;
 end package body rest_instruction;
-
