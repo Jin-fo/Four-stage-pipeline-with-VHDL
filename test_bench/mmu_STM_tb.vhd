@@ -4,10 +4,10 @@ use ieee.numeric_std.all;
 use work.numeric_var.all;
 use work.all;
 
-entity alu_STM_tb is 
-end alu_STM_tb;
+entity mmu_STM_tb is 
+end mmu_STM_tb;
 
-architecture test_bench of alu_STM_tb is 
+architecture test_bench of mmu_STM_tb is 
 	-- Control FLAG
     signal write_flag  : std_logic := '0';
 
@@ -251,7 +251,7 @@ begin
             severity error;																   
 
         report "TEST COMPLETED: saturate_math w/ underflow saturating" severity warning;
-		wait;
 	end process;				
 end test_bench;
+
 
