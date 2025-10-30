@@ -4,10 +4,10 @@ use ieee.numeric_std.all;
 use work.numeric_var.all;
 use work.all;
 
-entity alu_RSI_tb is 
-end alu_RSI_tb;
+entity mmu_RSI_tb is 
+end mmu_RSI_tb;
 
-architecture test_bench of alu_RSI_tb is 
+architecture test_bench of mmu_RSI_tb is 
 	-- Control FLAG
     signal write_flag  : std_logic := '0';
 
@@ -269,6 +269,5 @@ begin
 	severity error;	
 	
     report "TEST COMPLETED: rest of the instruction" severity warning;
-	wait;
 	end process;
 end test_bench; 
