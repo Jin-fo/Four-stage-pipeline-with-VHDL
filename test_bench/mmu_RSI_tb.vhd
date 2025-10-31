@@ -8,9 +8,6 @@ entity mmu_RSI_tb is
 end mmu_RSI_tb;
 
 architecture test_bench of mmu_RSI_tb is 
-	-- Control FLAG
-    signal write_flag  : std_logic := '0';
-
     -- Inputs to ALU
     signal opcode      : std_logic_vector(OPCODE_LENGTH-1 downto 0);
     signal in_PORT3    : std_logic_vector(REGISTER_LENGTH-1 downto 0);
@@ -99,7 +96,7 @@ begin
 	in_PORT1 <= x"700870077006700570047003F0027001";
 	wait for period;
 	assert out_PORTD = x"0700070007000700070007000F000700"
-	report "TEST FAIL: 110001, wback =" & slv_to_hex(out_PORTD)
+	report "TEST FAIL: 110001, out_PORTD =" & slv_to_hex(out_PORTD)
 	severity error;	
 	--------------------------------------------------------------------
     -- TEST: Opcode 110010, stauturated
@@ -109,7 +106,7 @@ begin
 	in_PORT1 <= x"700870077006700570047003F0027001";
 	wait for period;
 	assert out_PORTD = x"F009700BF0077008F0037005FFFFFFFF"
-	report "TEST FAIL: 110010, wback =" & slv_to_hex(out_PORTD)
+	report "TEST FAIL: 110010, out_PORTD =" & slv_to_hex(out_PORTD)
 	severity error;	
 		
 	--------------------------------------------------------------------
@@ -120,18 +117,18 @@ begin
 	in_PORT1 <= x"700870077006700570047003F0027001";
 	wait for period;
 	assert out_PORTD = x"00040006000500050004000500050004"
-	report "TEST FAIL: 110011, wback =" & slv_to_hex(out_PORTD)
+	report "TEST FAIL: 110011, out_PORTD =" & slv_to_hex(out_PORTD)
 	severity error;	
 	
 	--------------------------------------------------------------------
     -- TEST: Opcode 110100
     --------------------------------------------------------------------
 	opcode <= "110100";	
-	in_PORT2 <= x"80010004800100037FFF00027FFF0001";
-	in_PORT1 <= x"700870077006700570047003F0027001";
+	in_PORT2 <= x"80010004800100037FFF7FF27FFFFFF1";
+	in_PORT1 <= x"700870077006800570047003F0027001";
 	wait for period;
-	assert out_PORTD = x"F009700BF00770087FFF700570017002"
-	report "TEST FAIL: 110100, wback =" & slv_to_hex(out_PORTD)
+	assert out_PORTD = x"F009700BF00780087FFF7FFF70016FF2"
+	report "TEST FAIL: 110100, out_PORTD =" & slv_to_hex(out_PORTD)
 	severity error;	
 	
 	--------------------------------------------------------------------
@@ -142,7 +139,7 @@ begin
 	in_PORT1 <= x"700870077006700570047003F0027001";
 	wait for period;
 	assert out_PORTD = x"7008700770067005FFFFFFFFFFFFFFFF"
-	report "TEST FAIL: 110101, wback =" & slv_to_hex(out_PORTD)
+	report "TEST FAIL: 110101, out_PORTD =" & slv_to_hex(out_PORTD)
 	severity error;	
 	
 	--------------------------------------------------------------------
@@ -153,7 +150,7 @@ begin
 	in_PORT1 <= x"700870077006700570047003F0027001";
 	wait for period;
 	assert out_PORTD = x"70087007700870077008700770087007"
-	report "TEST FAIL: 110110, wback =" & slv_to_hex(out_PORTD)
+	report "TEST FAIL: 110110, out_PORTD =" & slv_to_hex(out_PORTD)
 	severity error;	
 	
 	--------------------------------------------------------------------
@@ -164,7 +161,7 @@ begin
 	in_PORT1 <= x"700870077006700570047003F0027001";
 	wait for period;	
 	assert out_PORTD = x"70087007700670057FFF00027FFF0001"
-	report "TEST FAIL: 110111, wback =" & slv_to_hex(out_PORTD)
+	report "TEST FAIL: 110111, out_PORTD =" & slv_to_hex(out_PORTD)
 	severity error;	
 	
 	--------------------------------------------------------------------
@@ -175,18 +172,18 @@ begin
 	in_PORT1 <= x"700870077006700570047003F0027001";
 	wait for period;		
 	assert out_PORTD = x"800100048001000370047003F0027001"
-	report "TEST FAIL: 111000, wback =" & slv_to_hex(out_PORTD)
+	report "TEST FAIL: 111000, out_PORTD =" & slv_to_hex(out_PORTD)
 	severity error;	
 	
 	--------------------------------------------------------------------
     -- TEST: Opcode 111001
     --------------------------------------------------------------------
 	opcode <= "111001";	   
-	in_PORT2 <= x"80010004800100037FFF00027FFF0001";
+	in_PORT2 <= x"80010004800100037FFF7FF27FFFFFF1";
 	in_PORT1 <= x"700870077006700570047003F0027001";
 	wait for period;
-	assert out_PORTD = x"0001C01C0001500F0000E00600007001"
-	report "TEST FAIL: 111001, wback =" & slv_to_hex(out_PORTD)
+	assert out_PORTD = x"0001C01C0001500F37FB5FD66FFA6FF1"
+	report "TEST FAIL: 111001, out_PORTD =" & slv_to_hex(out_PORTD)
 	severity error;	
 	
 	--------------------------------------------------------------------
@@ -198,7 +195,7 @@ begin
 	in_PORT1 <= x"80010004800100037FFF00027FFF0001";
 	wait for period;
 	assert out_PORTD = x"000000500000003C0000002800000014"
-	report "TEST FAIL: 111010, wback =" & slv_to_hex(out_PORTD)
+	report "TEST FAIL: 111010, out_PORTD =" & slv_to_hex(out_PORTD)
 	severity error;	
 	
 	--------------------------------------------------------------------
@@ -209,7 +206,7 @@ begin
 	in_PORT1 <= x"80010004800100037FFF00027FFF0001";
 	wait for period;
 	assert out_PORTD = x"00000000000000007FFF00027FFF0001"
-	report "TEST FAIL: 111011, wback =" & slv_to_hex(out_PORTD)
+	report "TEST FAIL: 111011, out_PORTD =" & slv_to_hex(out_PORTD)
 	severity error;	
 	
 	--------------------------------------------------------------------
@@ -220,19 +217,18 @@ begin
 	in_PORT1 <= x"070870071006700570047003F0027001";
 	wait for period;
 	assert out_PORTD = x"00000005000000030000000100000000"
-	report "TEST FAIL: 111100, wback =" & slv_to_hex(out_PORTD)
+	report "TEST FAIL: 111100, out_PORTD =" & slv_to_hex(out_PORTD)
 	severity error;												   
 	
 	--------------------------------------------------------------------
     -- TEST: Opcode 111101
     --------------------------------------------------------------------   
-	opcode <= "111101";	  
-	in_immed <= x"0014"; 
-	in_PORT2 <= (others => '-');
+	opcode <= "111101";	   
+	in_PORT2 <= x"FFFFFF10FFFFFFF00000000100000000";
 	in_PORT1 <= x"80010004800100037FFF00027FFF0001";
 	wait for period;
-	assert out_PORTD = x"1000480010003800F00027FFF00017FF"
-	report "TEST FAIL: 111101, wback =" & slv_to_hex(out_PORTD)
+	assert out_PORTD = x"00048001000380013FFF80017FFF0001"
+	report "TEST FAIL: 111101, out_PORTD =" & slv_to_hex(out_PORTD)
 	severity error;			 
 
 	--------------------------------------------------------------------
@@ -243,18 +239,18 @@ begin
 	in_PORT1 <= x"700870077006700570047003F0027001";
 	wait for period;
 	assert out_PORTD = x"0FF88FFD0FFA8FFE0FFA8FFF00000000"
-	report "TEST FAIL: 111110, wback =" & slv_to_hex(out_PORTD)
+	report "TEST FAIL: 111110, out_PORTD =" & slv_to_hex(out_PORTD)
 	severity error;	
 	
 	--------------------------------------------------------------------
     -- TEST: Opcode 111111
     --------------------------------------------------------------------   
 	opcode <= "111111";	
-	in_PORT2 <= x"80010004800100037FFF00027FFF0001";
-	in_PORT1 <= x"700870077006700570047003F0027001";
+	in_PORT2 <= x"80010004800100057FFF00067FFF8F01";
+	in_PORT1 <= x"70080007780600037004FFF3F0027001";
 	wait for period;
-	assert out_PORTD = x"80008FFD80008FFE0FFB8FFF7FFF9000"
-	report "TEST FAIL: 111111, wback =" & slv_to_hex(out_PORTD)
+	assert out_PORTD = x"8000FFFD800000020FFB00137FFF8000"
+	report "TEST FAIL: 111111, out_PORTD =" & slv_to_hex(out_PORTD)
 	severity error;	
 	
 	--------------------------------------------------------------------
