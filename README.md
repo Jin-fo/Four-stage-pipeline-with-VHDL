@@ -7,7 +7,7 @@ The complete 4-stage pipelines is designed at the register transfer level (RTL) 
 
 The complete top-level MMU model is then instantiated with another test bench to validate the completeness of the four-stage pipeline, where each instruction will cycle through all stages of the pipeline. The resulting outputs will demonstrate the operational behavior and status of each pipeline stage during execution. 
 ![System diagram](./image/diagram.png)
-> **Note:** Diagram showing 3 out of 4 stages(Memory, ALU, Forwarding) of the complete pipeline, emphsizing the MMU stage of the ALU compoment.
+> **Note:** Diagram showing 3 out of 4 stages (Memory, ALU, Forwarding) of the complete pipeline, emphasizing the MMU stage of the ALU.
 ## Overview
 This paper presents **Part I of the Final Report**, focusing exclusively on the architecture of the Multimedia ALU during the execution stage. 
 At this phase, no prior knowledge of the complete pipeline design is required for implementing the Multimedia ALU module. The MMU is assumed to received all the correct and necessary input signals from the previous module up to the stage following the forwarding unit.
