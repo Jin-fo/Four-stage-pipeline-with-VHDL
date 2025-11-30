@@ -38,9 +38,7 @@ OR r2, r0, r3
 SFWU r2, r3, r4
 // expected r4 value : 00000000000000000000000000000000
 
-
 SHRHI 4, r3, r5 
 // expected r6 value : 0000000000000000070007000F000700
-
 
 NOP
