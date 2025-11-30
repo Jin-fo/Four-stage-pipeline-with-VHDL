@@ -10,5 +10,7 @@ The complete top-level MMU model is then instantiated with another test bench to
 > **Note:** Diagram complete 4-stages (Instruction Fetch, Register File, ALU, and Write-back) of the complete pipeline, emphasizing the MMU stage of the ALU.
 
 ![System diagram](Register_Write_Back.png)
+Overview of the register write-back path showing how computed results are returned to the destination register at the end of the pipeline.
 
 ![System diagram](Forward_to_ALU.png)
+Overview of the ALU forwarding mechanism that bypasses register write-back delays by routing recent results directly into the execution stage.
