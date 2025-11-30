@@ -9,3 +9,6 @@ The complete top-level MMU model is then instantiated with another test bench to
 ![System diagram](Block_Diagram.png)
 > **Note:** Diagram complete 4-stages (Instruction Fetch, Register File, ALU, and Write-back) of the complete pipeline, emphasizing the MMU stage of the ALU.
 
+![System diagram](Register_Write_Back.png)
+
+![System diagram](Forward_to_ALU.png)
