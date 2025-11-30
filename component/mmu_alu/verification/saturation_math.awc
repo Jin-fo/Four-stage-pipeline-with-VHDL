@@ -1,0 +1,57 @@
+<config>
+    <version>
+        3.1
+    </version>
+    <comment>
+    </comment>
+    <databases>
+        <database id="">*virtual*</database>
+        <database id="d24c130a690554f902691aeb6f040900">mmu_STM.asdb</database>
+    </databases>
+    <gridshown/>
+    <signallists>
+        <signallist id="0">
+        <signal>/mmu_STM_tb/opcode</signal>
+        <signal>/mmu_STM_tb/in_PORT3</signal>
+        <signal>/mmu_STM_tb/in_PORT2</signal>
+        <signal>/mmu_STM_tb/in_PORT1</signal>
+        <signal>/mmu_STM_tb/out_PORTD</signal>
+        <signal>/mmu_STM_tb/wback_flag</signal>
+        </signallist>
+    </signallists>
+    <timebases>
+        <timebase id="0">
+            <time start_time="0" end_time="23217" />
+        </timebase>
+    </timebases>
+    <prefbases>
+        <prefbase id="0" >
+        </prefbase>
+    </prefbases>
+    <bookmarkbases>
+        <bookmarks id="0">
+        </bookmarks>
+    </bookmarkbases>
+    <cursorbases>
+        <cursors id="0">
+            <cursor value="19992" label="Cursor 1" locked="0" />
+        </cursors>
+    </cursorbases>
+    <measurementbases>
+    </measurementbases>
+    <commentbases>
+        <comments id="0">
+        </comments>
+        <comments id="1">
+        </comments>
+    </commentbases>
+    <regionsbases>
+        <regions id="0">
+        </regions>
+        <regions id="1">
+        </regions>
+    </regionsbases>
+    <views>
+        <view signallist="0" propertybase="0" prefbase="0" type="1" bookmarks="0" cursors="0" measurements="-1" comments="1" regions="1" />
+    </views>
+</config>
