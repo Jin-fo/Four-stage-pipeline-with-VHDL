@@ -6,11 +6,15 @@ This project focuses on the structural and behavioral design of a four-stage pip
 The complete 4-stage pipelines is designed at the register transfer level (RTL) developed in a structural manner with several modules operating simultaneously. Each stage of the pipeline is defined by a module that is developed behaviorally with inter-stage register. Verification of each module will be done individually with their respective self-checking test benches. This will ensure the functional correctness of all stages of the pipeline prior to full system integration of the 4-stage MMU.  
 
 The complete top-level MMU model is then instantiated with another test bench to validate the completeness of the four-stage pipeline, where each instruction will cycle through all stages of the pipeline. The resulting outputs will demonstrate the operational behavior and status of each pipeline stage during execution. 
+
+### Four-stage Multimedia ALU Pipeline Block Diagram 
 ![System diagram](Block_Diagram.png)
 > **Note:** Diagram complete 4-stages (Instruction Fetch, Register File, ALU, and Write-back) of the complete pipeline, emphasizing the MMU stage of the ALU.
 
+### Register Write Back
 ![System diagram](Register_Write_Back.png)
 > Overview of the register write-back path showing how computed results are returned to the destination register at the end of the pipeline.
 
+### Forward Unit to ALU
 ![System diagram](Forward_to_ALU.png)
 > Overview of the ALU forwarding mechanism that bypasses register write-back delays by routing recent results directly into the execution stage.
