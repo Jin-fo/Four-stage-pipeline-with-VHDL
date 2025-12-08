@@ -139,15 +139,14 @@ package body rest_instruction is
 	            end loop;
 	
 	        when "1101" => --rotate bits in word
-	            for i in 0 to 3 loop
-	                vector32 := in_rs1(32*(i+1)-1 downto i*32);
-	                int_var := to_integer(unsigned(in_rs2(32*(i+1)-27-1 downto i*32))) mod 32;
-	                if int_var = 0 then
-	                    temp_out(32*(i+1)-1 downto 32*i) := vector32;
-	                else
-	                    temp_out(32*(i+1)-1 downto 32*i) := vector32(int_var-1 downto 0) & vector32(31 downto int_var);
-	                end if;
-	            end loop;
+			    for i in 0 to 3 loop
+			        vector32 := in_rs1(32*(i+1)-1 downto i*32);
+			        int_var := to_integer(unsigned(in_rs2(32*(i+1)-27-1 downto i*32))) mod 32;
+			
+			        temp_out(32*(i+1)-1 downto 32*i) :=
+			            std_logic_vector( unsigned(vector32) ror int_var );
+			    end loop;
+	
 	
 	        when "1110" => --subtract from word unsigned
 	            for i in 0 to 3 loop
@@ -175,4 +174,5 @@ package body rest_instruction is
 			end if;
 		end procedure;
 end package body rest_instruction;
+
 
