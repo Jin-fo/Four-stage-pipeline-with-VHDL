@@ -9,7 +9,7 @@ The complete top-level MMU model is then instantiated with another test bench to
 
 ### Four-stage Multimedia ALU Pipeline Block Diagram 
 ![System diagram](Block_Diagram.png)
-> **Note:** Diagram complete 4-stages (Instruction Fetch, Register File, ALU, and Write-back) of the complete pipeline, emphasizing the MMU stage of the ALU.
+> **Note:** Diagram showing Instruction Fetch, Register File, ALU, and Write-back of the complete 4-stage pipeline, emphasizing the MMU stage of the ALU.
 
 ### Register Write Back
 ![System diagram](Register_Write_Back.png)
@@ -18,3 +18,7 @@ The complete top-level MMU model is then instantiated with another test bench to
 ### Forward Unit to ALU
 ![System diagram](Forward_to_ALU.png)
 > Overview of the ALU forwarding mechanism that bypasses register write-back delays by routing recent results directly into the execution stage.
+>
+> ### Synplify Pro RTL
+![System diagram](Forward_to_ALU.png)
+>  Hieracherial view of the complete 4-stages pipeline synthesized using Synpify Pro.
