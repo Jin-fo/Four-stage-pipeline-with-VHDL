@@ -20,7 +20,7 @@ package decoder is
 		signal wback	: out std_logic;
 		read_select	: out std_logic_vector(2 downto 0)
 	);
-end package;  
+end package decoder;  
 
 package body decoder is	
 	procedure decoder_main(		
@@ -106,4 +106,5 @@ package body decoder is
 			read_select := var_read;
  
 	end procedure;
+
 end package body decoder;
