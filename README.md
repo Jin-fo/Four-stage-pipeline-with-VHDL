@@ -20,5 +20,5 @@ The complete top-level MMU model is then instantiated with another test bench to
 > Overview of the ALU forwarding mechanism that bypasses register write-back delays by routing recent results directly into the execution stage.
 >
 > ### Synplify Pro RTL
-![System diagram](Forward_to_ALU.png)
+![System diagram](Synplify_RTL.pdf)
 >  Hieracherial view of the complete 4-stages pipeline synthesized using Synpify Pro.
