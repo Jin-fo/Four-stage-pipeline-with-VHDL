@@ -112,6 +112,7 @@ begin
 		
 		out_file <= REG_FILE;
 	end process;   
-end behavior ;
+end architecture;
 
 																	 
+
