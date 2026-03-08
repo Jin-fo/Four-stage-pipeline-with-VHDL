@@ -1,0 +1,13 @@
+Powershell commend:
+
+## Directory
+cd Downloads\ESE345\Project\VHDL_Multimedia_ALU_Pipeline\Multimedia_Processor\src
+
+## Building
+$env:PATH += ";C:\msys64\usr\bin;C:\msys64\mingw64\bin";
+
+g++ -std=c++17 -O2 mmu_assembler.cpp -o mmu_assembler.exe
+
+## complied
+cd ../src
+.\mmu_assembler.exe hazard_tests.asm instruction_file.txt
