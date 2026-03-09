@@ -11,19 +11,10 @@ architecture test_bench of mmu_LDI_tb is
 	--inputs
 	signal ex_opcode		: std_logic_vector(OPCODE_LENGTH-1 downto 0);
 	
-	signal ex_rs3		: std_logic_vector(REGISTER_LENGTH-1 downto 0);
-	signal ex_rs2		: std_logic_vector(REGISTER_LENGTH-1 downto 0);
-	signal ex_rs1		: std_logic_vector(REGISTER_LENGTH-1 downto 0); 
+	signal fw_rs3		: std_logic_vector(REGISTER_LENGTH-1 downto 0);
+	signal fw_rs2		: std_logic_vector(REGISTER_LENGTH-1 downto 0);
+	signal fw_rs1		: std_logic_vector(REGISTER_LENGTH-1 downto 0); 
 	signal ex_immed		: std_logic_vector(IMMEDIATE_LENGTH-1 downto 0);	
-	
-	--fowarding
-	signal ex_rs3_ptr		: std_logic_vector(ADDRESS_LENGTH-1 downto 0);
-	signal ex_rs2_ptr		: std_logic_vector(ADDRESS_LENGTH-1 downto 0);
-	signal ex_rs1_ptr		: std_logic_vector(ADDRESS_LENGTH-1 downto 0); 
-	
-	signal wb_rd		: std_logic_vector(REGISTER_LENGTH-1 downto 0);
-	signal wb_rd_ptr	: std_logic_vector(ADDRESS_LENGTH-1 downto 0);  --for forwarding address comparision
-	signal wb_wback		: std_logic;
 	
 	--branching
 	signal ex_pctrl		: std_logic;
@@ -79,18 +70,10 @@ begin
 		port map(
         ex_opcode      => ex_opcode,
 
-        ex_rs3    	=> ex_rs3,
-        ex_rs2    	=> ex_rs2,
-        ex_rs1    	=> ex_rs1,
+        fw_rs3    	=> fw_rs3,
+        fw_rs2    	=> fw_rs2,
+        fw_rs1    	=> fw_rs1,
         ex_immed    => ex_immed,
-		
-		ex_rs3_ptr		=> ex_rs3_ptr,
-		ex_rs2_ptr		=> ex_rs2_ptr,
-		ex_rs1_ptr		=> ex_rs1_ptr,
-		
-		wb_rd 	  	=> wb_rd,
-		wb_rd_ptr 	=> wb_rd_ptr,
-		wb_wback 	=> wb_wback, 
 		
 		ex_pctrl	=> ex_pctrl,
 		ex_brch		=> ex_brch,
@@ -108,7 +91,7 @@ begin
 -- load_immediate TEST w/ indexing
 --------------------------------------------------------------------	    
 		ex_immed <= x"DEAD";
-	    ex_rs3 <= (others => '0'); 
+	    fw_rs3 <= (others => '0'); 
 	--------------------------------------------------------------------
 	-- TEST: ex_opcode = 0--000
 	--------------------------------------------------------------------

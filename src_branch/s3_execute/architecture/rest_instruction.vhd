@@ -17,8 +17,8 @@ package rest_instruction is
 	
 	procedure BRH_main(
 		signal opcode	: in std_logic_vector(OPCODE_LENGTH-1 downto 0);
-		in_rs2			: in std_logic_vector(REGISTER_LENGTH-1 downto 0);
-		in_rs1			: in std_logic_vector(REGISTER_LENGTH-1 downto 0);
+		signal in_rs2			: in std_logic_vector(REGISTER_LENGTH-1 downto 0);
+		signal in_rs1			: in std_logic_vector(REGISTER_LENGTH-1 downto 0);
 		
 		out_ctrl 		: out std_logic
 	);
@@ -182,46 +182,40 @@ package body rest_instruction is
 	end procedure;	  
 		
 	procedure BRH_main(
-		signal opcode	: in std_logic_vector(OPCODE_LENGTH-1 downto 0);
-		in_rs2			: in std_logic_vector(REGISTER_LENGTH-1 downto 0);
-		in_rs1			: in std_logic_vector(REGISTER_LENGTH-1 downto 0);
-		
-		out_ctrl 		: out std_logic
-	) is  
-		variable true_flag : std_logic := '0';
+	    signal opcode : in std_logic_vector(OPCODE_LENGTH-1 downto 0);
+	    signal in_rs2        : in std_logic_vector(REGISTER_LENGTH-1 downto 0);
+	    signal in_rs1        : in std_logic_vector(REGISTER_LENGTH-1 downto 0);
+	    out_ctrl      : out std_logic
+	) is
+	    variable true_flag : std_logic := '0';
 	begin
-		case opcode(2 downto 0) is 
-			when "000" =>  
-				if in_rs2 = in_rs1 then
-					true_flag := '1';
-				end if;
-				
-			when "001" =>  
-				if in_rs2 /= in_rs1 then
-					true_flag := '1'; 
-				end if;
-			
-			when "010" =>
-				if in_rs2 > in_rs1 then
-					true_flag := '1';
-				end if;		
-				
-			when "011" =>
-				if in_rs2 < in_rs1 then
-					true_flag := '1';
-				end if;	
-			
-			when "100" =>
-			   true_flag := '1';
-			
-			when others =>
-			   true_flag := '0';
-		end case;			
-		if true_flag = '1' then	
-			out_ctrl := '1';
-		else
-			out_ctrl := '0';
-		end if;
+		true_flag := '0';
+
+		case opcode(2 downto 0) is
+		    when "000" =>
+		        if in_rs2 = in_rs1 then
+		            true_flag := '1';	
+		        end if;
 		
+		    when "001" =>
+		        if in_rs2 /= in_rs1 then
+		            true_flag := '1';
+		        end if;
+		
+		    when "010" =>
+		        if signed(in_rs2) > signed(in_rs1) then
+		            true_flag := '1';
+		        end if;
+		
+		    when "011" =>
+		        if signed(in_rs2) < signed(in_rs1) then
+		            true_flag := '1';
+		        end if;
+		
+		    when others =>
+		        true_flag := '1';
+		end case;
+		
+		out_ctrl := true_flag;
 	end procedure;
-	end package body rest_instruction;
+end package body rest_instruction;

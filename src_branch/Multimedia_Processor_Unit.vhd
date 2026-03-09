@@ -89,7 +89,10 @@ entity Multimedia_Processor_Unit is
 
     -- ======================
     -- Execute / Control (debug)
-    -- ======================
+    -- ======================	
+	fw_rs3_i     : out std_logic_vector(REGISTER_LENGTH-1 downto 0);
+    fw_rs2_i     : out std_logic_vector(REGISTER_LENGTH-1 downto 0);
+    fw_rs1_i     : out std_logic_vector(REGISTER_LENGTH-1 downto 0);
     ex_rd_i      : out std_logic_vector(REGISTER_LENGTH-1 downto 0);
 
     pc_sctrl_i   : out std_logic;
@@ -187,6 +190,10 @@ architecture structural of Multimedia_Processor_Unit is
     -- ======================
     -- Execute / MMU / ALU
     -- ======================
+	signal fw_rs3     : std_logic_vector(REGISTER_LENGTH-1 downto 0);
+    signal fw_rs2     : std_logic_vector(REGISTER_LENGTH-1 downto 0);
+    signal fw_rs1     : std_logic_vector(REGISTER_LENGTH-1 downto 0);
+	
     signal ex_rd      : std_logic_vector(REGISTER_LENGTH-1 downto 0);
 
     signal pc_sctrl   : std_logic;
@@ -367,30 +374,42 @@ begin
 		ex_pctrl	=> ex_pctrl,
 		ex_brch		=> ex_brch); 
 		
-	MMU_ALU : entity work.mmu(behavior)
-		port map ( 
+	FOR_WARD : entity work.forward(behavior)
+		port map (	   
 		--inputs
-		ex_opcode	=> ex_opcode,		
-		
 		ex_rs3 		=> ex_rs3,
 		ex_rs2		=> ex_rs2,
-		ex_rs1		=> ex_rs1,
-		ex_immed	=> ex_immed,
+		ex_rs1		=> ex_rs1, 
 		
 		ex_rs3_ptr	=> ex_rs3_ptr,
 		ex_rs2_ptr	=> ex_rs2_ptr,
-		ex_rs1_ptr	=> ex_rs1_ptr,
+		ex_rs1_ptr	=> ex_rs1_ptr,	
+		
 		--write back
 		wb_rd		=> wb_rd,
 		wb_rd_ptr	=> wb_rd_ptr,
 		wb_wback	=> wb_wback,
 		
+		fw_rs3 		=> fw_rs3,
+		fw_rs2		=> fw_rs2,
+		fw_rs1		=> fw_rs1);
+		
+	MMU_ALU : entity work.mmu(behavior)
+		port map ( 
+		--inputs
+		ex_opcode	=> ex_opcode,		
+		
+		fw_rs3 		=> fw_rs3,
+		fw_rs2		=> fw_rs2,
+		fw_rs1		=> fw_rs1,
+		ex_immed	=> ex_immed,
+		
 		--branch
 		ex_pctrl	=> ex_pctrl,
+		ex_brch		=> ex_brch,
 		
 		--output
 		pc_sctrl	=> pc_sctrl,
-		ex_brch		=> ex_brch,
 		flush_ctrl 	=> flush_ctrl,
 		ex_rd		=> ex_rd);
 		
@@ -479,6 +498,10 @@ begin
 	ex_wback_i  <= ex_wback;
 	ex_pctrl_i  <= ex_pctrl;
 	ex_brch_i    <= ex_brch;
+	
+	fw_rs3_i    <= fw_rs3;
+	fw_rs2_i    <= fw_rs2;
+	fw_rs1_i    <= fw_rs1;
 	
 	ex_rd_i     <= ex_rd;
 	

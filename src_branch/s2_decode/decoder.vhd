@@ -81,11 +81,11 @@ begin
 					
 					case id_instruc(INSTRUCTION_LENGTH-7 downto INSTRUCTION_LENGTH-10) is 
 						when "0000" => --NOP instruction	
-							id_immed    <= (others => '-');	
+							id_immed    <= (others => '0');	
 							id_wback 	<= '0';	
 							
 							read_sel	<= "000";
-							id_rd_ptr 	<= (others => '-');	 
+							id_rd_ptr 	<= (others => '0');	 
 							
 						when "0001" => 	
 							id_immed 	<= b"000000000000" & id_instruc(INSTRUCTION_LENGTH-12 downto INSTRUCTION_LENGTH-15); 
@@ -96,7 +96,7 @@ begin
 							read_sel	<= "001";
 							
 						when others => 	 
-							id_immed    <= (others => '-');	 
+							id_immed    <= (others => '0');	 
 					end case;			
 					
 					

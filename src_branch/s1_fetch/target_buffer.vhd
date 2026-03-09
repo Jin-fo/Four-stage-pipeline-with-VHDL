@@ -41,7 +41,7 @@ begin
 	    if BTB(i).valid = '1' then 
 	        var_target := BTB(i).target;
 	    else 
-	        var_target := (others => '-');
+	        var_target := (others => '0');
 	    end if;  
 	    
 	    -- Write/update and forward target buffer
@@ -52,7 +52,7 @@ begin
 	        
 	        if i = j then 
 	            var_target := id_target;
-	        end if;
+	        end if;	
 	    end if;  
 	    
 	    iff_target <= var_target; 

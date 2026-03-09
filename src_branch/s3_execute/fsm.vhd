@@ -20,6 +20,11 @@ begin
 
     main : process(clk)
     begin
+		if rising_edge(clk) then 
+			exw_state <= (others => '-');
+			exw_sctrl <= '0';
+		end if;		   
+		
         if falling_edge(clk) then
             exw_sctrl   <= '0';
             exw_state <= ex_state;

@@ -100,7 +100,11 @@ architecture test_bench of Multimedia_Processor_Unit_tb is
 
     -- ======================
     -- Execute / Control
-    -- ======================
+    -- ====================== 
+	signal fw_rs3     : std_logic_vector(REGISTER_LENGTH-1 downto 0);
+    signal fw_rs2     : std_logic_vector(REGISTER_LENGTH-1 downto 0);
+    signal fw_rs1     : std_logic_vector(REGISTER_LENGTH-1 downto 0);
+	
     signal ex_rd      : std_logic_vector(REGISTER_LENGTH-1 downto 0);
     signal pc_sctrl   : std_logic;
     signal flush_ctrl : std_logic;
@@ -199,7 +203,10 @@ begin
             ex_pctrl_i  => ex_pctrl,
             ex_brch_i    => ex_brch,
 
-            -- Execute
+            -- Execute	 
+			fw_rs3_i    => fw_rs3,
+            fw_rs2_i    => fw_rs2,
+            fw_rs1_i    => fw_rs1,
             ex_rd_i     => ex_rd,
             pc_sctrl_i  => pc_sctrl,
             flush_ctrl_i=> flush_ctrl,

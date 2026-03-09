@@ -28,10 +28,6 @@ architecture behavior of register_file is
 begin		
 		
 	register_file : process(read_sel, id_rs3_ptr, id_rs2_ptr, id_rs1_ptr, wb_wback)		
-		variable var_rs3_ptr	: std_logic_vector(ADDRESS_LENGTH-1 downto 0) := (others => '-');
-		variable var_rs2_ptr	: std_logic_vector(ADDRESS_LENGTH-1 downto 0) := (others => '-');
-		variable var_rs1_ptr	: std_logic_vector(ADDRESS_LENGTH-1 downto 0) := (others => '-');
-	
 		variable var_rs3 	: std_logic_vector(REGISTER_LENGTH-1 downto 0);
 		variable var_rs2 	: std_logic_vector(REGISTER_LENGTH-1 downto 0);
 		variable var_rs1 	: std_logic_vector(REGISTER_LENGTH-1 downto 0);
@@ -42,34 +38,34 @@ begin
         -----------------------------------------------------------------
 		if read_sel(2) = '1' then
 		var_rs3 := REG_FILE(
-			(to_integer(unsigned(var_rs3_ptr))+1)*(REGISTER_LENGTH)-1
+			(to_integer(unsigned(id_rs3_ptr))+1)*(REGISTER_LENGTH)-1
 			downto 
-			to_integer(unsigned(var_rs3_ptr))*(REGISTER_LENGTH)); 
+			to_integer(unsigned(id_rs3_ptr))*(REGISTER_LENGTH)); 
 		end if;
 		if read_sel(1) = '1' then
 		var_rs2 := REG_FILE(
-			(to_integer(unsigned(var_rs2_ptr))+1)*(REGISTER_LENGTH)-1 
+			(to_integer(unsigned(id_rs2_ptr))+1)*(REGISTER_LENGTH)-1 
 			downto 
-			to_integer(unsigned(var_rs2_ptr))*(REGISTER_LENGTH));
+			to_integer(unsigned(id_rs2_ptr))*(REGISTER_LENGTH));
 		end if;
 		if read_sel(0) = '1' then
 		var_rs1 := REG_FILE(
-			(to_integer(unsigned(var_rs1_ptr))+1)*(REGISTER_LENGTH)-1 
+			(to_integer(unsigned(id_rs1_ptr))+1)*(REGISTER_LENGTH)-1 
 			downto 
-			to_integer(unsigned(var_rs1_ptr))*(REGISTER_LENGTH)); 
+			to_integer(unsigned(id_rs1_ptr))*(REGISTER_LENGTH)); 
 		end if;		  
 		
         -------------------------------------------------------------------
         -- FORWARDING
         -------------------------------------------------------------------
         if wb_wback = '1' then
-            if wb_rd_ptr = var_rs3_ptr then
+            if wb_rd_ptr = id_rs3_ptr then
                 var_rs3 := wb_rd;
             end if;
-            if wb_rd_ptr = var_rs2_ptr then
+            if wb_rd_ptr = id_rs2_ptr then
                 var_rs2 := wb_rd;
             end if;
-            if wb_rd_ptr = var_rs1_ptr then
+            if wb_rd_ptr = id_rs1_ptr then
                 var_rs1 := wb_rd;
             end if;	
 			REG_FILE(

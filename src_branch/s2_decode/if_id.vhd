@@ -16,30 +16,34 @@ entity if_id is
 		id_pc		: out std_logic_vector(COUNTER_LENGTH-1 downto 0);
 		id_instruc 	: out std_logic_vector(INSTRUCTION_LENGTH-1 downto 0):= (others => '-'); 
 		ifd_target	: out std_logic_vector(COUNTER_LENGTH-1 downto 0)
-	);
+		);
 end if_id;
 
 
 architecture behavior of if_id is
 begin		
-    
-    -- ? BETTER: Proper synchronous process
-    if_id : process (clk, reset_bar)	
-    begin 
-        if reset_bar = '0' then
-            id_instruc  <= NOP_INSTRUCTION;
-            id_pc       <= (others => '-');
-            ifd_target  <= (others => '-');
-        elsif rising_edge(clk) then	
-            if flush_ctrl = '1' then
-                id_instruc  <= NOP_INSTRUCTION;
-                id_pc       <= (others => '-');
-                ifd_target  <= (others => '-');
-            elsif enable = '1' then
-                id_instruc  <= if_instruc;
-                id_pc       <= if_pc;
-                ifd_target  <= iff_target;
-            end if;   
-        end if;	 		
-    end process;
+	
+	-- ? BETTER: Proper synchronous process
+	if_id : process (clk)	
+	begin 	   
+		
+		if flush_ctrl = '1' then
+			id_instruc  <= NOP_INSTRUCTION;
+			id_pc       <= (others => '-');
+			ifd_target  <= (others => '-');
+		end if;
+		
+		if reset_bar = '0' then
+			id_instruc  <= NOP_INSTRUCTION;
+			id_pc       <= (others => '-');
+			ifd_target  <= (others => '-');
+		elsif rising_edge(clk) then	
+			if enable = '1' then
+				id_instruc  <= if_instruc;
+				id_pc       <= if_pc;
+				ifd_target  <= iff_target;
+			end if;   
+		end if;
+		
+	end process;
 end architecture;
