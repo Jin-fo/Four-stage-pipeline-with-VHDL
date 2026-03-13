@@ -10,13 +10,13 @@ entity decoder is
 	
 	-- outputs
 	id_opcode		: out std_logic_vector(OPCODE_LENGTH-1 downto 0);
-	id_rs3_ptr		: out std_logic_vector(ADDRESS_LENGTH-1 downto 0) := (others => '-');
-	id_rs2_ptr		: out std_logic_vector(ADDRESS_LENGTH-1 downto 0) := (others => '-');
-	id_rs1_ptr		: out std_logic_vector(ADDRESS_LENGTH-1 downto 0) := (others => '-'); 	
-	id_rd_ptr		: out std_logic_vector(ADDRESS_LENGTH-1 downto 0) := (others => '-');
-	id_immed		: out std_logic_vector(IMMEDIATE_LENGTH-1 downto 0) := (others => '-');  
+	id_rs3_ptr		: out std_logic_vector(ADDRESS_LENGTH-1 downto 0);
+	id_rs2_ptr		: out std_logic_vector(ADDRESS_LENGTH-1 downto 0);
+	id_rs1_ptr		: out std_logic_vector(ADDRESS_LENGTH-1 downto 0); 	
+	id_rd_ptr		: out std_logic_vector(ADDRESS_LENGTH-1 downto 0);
+	id_immed		: out std_logic_vector(IMMEDIATE_LENGTH-1 downto 0);  
 	
-	read_sel		: out std_logic_vector(2 downto 0) := "000"; 	
+	read_sel		: out std_logic_vector(2 downto 0); 	
 	
 	-- controls
 	id_wback		: out std_logic;
@@ -108,21 +108,22 @@ begin
 					id_rd_ptr 	<= (others => '-');
 					id_immed 	<= std_logic_vector(resize(signed(id_instruc(INSTRUCTION_LENGTH-7 downto INSTRUCTION_LENGTH-15)), 16));
 					
-					read_sel 	<= "011";
-					
 					id_wback 	<= '0';	  
 					case id_instruc(INSTRUCTION_LENGTH-3 downto INSTRUCTION_LENGTH-6) is
 						when "1000" | "1001" | "1010" | "1011" =>
 							id_branch <= '1';
-							id_jump <= '0';
+							id_jump <= '0';	
+							read_sel 	<= "011";
 							
 						when "1100" =>
 							id_branch <= '0';
 							id_jump <= '1';	
+							read_sel <= "000";
 							
 						when others => 
 							id_branch <= '0';
-							id_jump <= '0';
+							id_jump <= '0';	
+							read_sel 	<= "011";
 						end case;
 				end if;
 			when others => 

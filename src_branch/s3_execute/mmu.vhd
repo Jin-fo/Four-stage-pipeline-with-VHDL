@@ -23,7 +23,7 @@ entity mmu is
 	--outputs	
 	pc_sctrl	: out std_logic;
 	flush_ctrl	: out std_logic;			 
-	ex_rd		: out std_logic_vector(REGISTER_LENGTH-1 downto 0) := (others => '-')
+	ex_rd		: out std_logic_vector(REGISTER_LENGTH-1 downto 0)
 	);
 end entity;
 

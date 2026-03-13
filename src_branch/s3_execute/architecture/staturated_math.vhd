@@ -11,7 +11,7 @@ package saturate_math is
 		in_rs2				: in std_logic_vector(REGISTER_LENGTH-1 downto 0);
 		in_rs1				: in std_logic_vector(REGISTER_LENGTH-1 downto 0);
 
-		signal out_rd	: out std_logic_vector(REGISTER_LENGTH-1 downto 0)
+		signal out_rd	: out std_logic_vector(REGISTER_LENGTH-1 downto 0) 
 	);
 end package saturate_math;
 	
@@ -26,7 +26,7 @@ package body saturate_math is
 	) is
 		variable vector32		: std_logic_vector(31 downto 0);
 		variable vector64		: std_logic_vector(63 downto 0);
-		variable temp_out	: std_logic_vector(REGISTER_LENGTH-1 downto 0);	
+		variable temp_out	: std_logic_vector(REGISTER_LENGTH-1 downto 0) := (others => '0');	
 	begin
 		case opcode(2 downto 0) is
 

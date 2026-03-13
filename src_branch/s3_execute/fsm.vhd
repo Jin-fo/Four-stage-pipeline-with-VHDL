@@ -10,8 +10,8 @@ entity state_fsm is
         ex_state	: in  std_logic_vector(1 downto 0);
         pc_sctrl	: in  std_logic;
 
-        exw_state	: out std_logic_vector(1 downto 0) := (others => '-');
-        exw_sctrl	: out std_logic := '0'
+        exw_state	: out std_logic_vector(1 downto 0);
+        exw_sctrl	: out std_logic
     );
 end entity;
 
@@ -21,7 +21,7 @@ begin
     main : process(clk)
     begin
 		if rising_edge(clk) then 
-			exw_state <= (others => '-');
+			exw_state <= (others => '0');
 			exw_sctrl <= '0';
 		end if;		   
 		

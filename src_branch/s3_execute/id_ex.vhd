@@ -52,7 +52,7 @@ begin
 	id_ex : process (reset_bar, clk, enable)
 	begin
 		if reset_bar = '0' then   
-			ex_pc		<= (others => '-');
+			ex_pc		<= (others => '0');
 			ex_opcode 	<= "110000";
 			ex_rs3      <= (others => '-');
 			ex_rs2      <= (others => '-');
@@ -64,7 +64,7 @@ begin
 			ex_rs2_ptr  <= (others => '-');
 			ex_rs1_ptr  <= (others => '-');
 			
-			ex_state	<= "--";
+			ex_state	<= "00";
 			
 			ex_wback    <= '0';
 			ex_pctrl	<= '0';

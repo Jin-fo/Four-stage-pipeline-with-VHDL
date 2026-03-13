@@ -20,7 +20,7 @@ package rest_instruction is
 		signal in_rs2			: in std_logic_vector(REGISTER_LENGTH-1 downto 0);
 		signal in_rs1			: in std_logic_vector(REGISTER_LENGTH-1 downto 0);
 		
-		out_ctrl 		: out std_logic
+		out_ctrl 		: out std_logic 
 	);
 end package; 
 
@@ -37,7 +37,7 @@ package body rest_instruction is
 	    variable unsign16   : unsigned(15 downto 0);
 	    variable vector16   : std_logic_vector(15 downto 0);
 	    variable vector32   : std_logic_vector(31 downto 0);  
-		variable temp_out	: std_logic_vector(REGISTER_LENGTH-1 downto 0);	
+		variable temp_out	: std_logic_vector(REGISTER_LENGTH-1 downto 0) := (others => '0');	
 		variable is_nop		: std_logic := '0';
 	begin
 	    case opcode(3 downto 0) is

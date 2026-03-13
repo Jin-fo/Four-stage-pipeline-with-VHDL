@@ -18,14 +18,14 @@ entity predictor is
         exw_sctrl   : in  std_logic; 
         
         -- target correction
-        id_target   : out std_logic_vector(COUNTER_LENGTH-1 downto 0) := (others => '-'); 
-        id_tctrl    : out std_logic := '0';
+        id_target   : out std_logic_vector(COUNTER_LENGTH-1 downto 0); 
+        id_tctrl    : out std_logic;
         
         -- prediction output
-        pred_pc     : out std_logic_vector(COUNTER_LENGTH-1 downto 0) := (others => '-');
-        id_pctrl    : out std_logic := '0';	  
-        id_state    : out std_logic_vector(1 downto 0) := (others => '-'); 
-        id_brch     : out std_logic := '0'
+        pred_pc     : out std_logic_vector(COUNTER_LENGTH-1 downto 0);
+        id_pctrl    : out std_logic;	  
+        id_state    : out std_logic_vector(1 downto 0); 
+        id_brch     : out std_logic
     );								  					   
 end entity;
 
@@ -48,10 +48,6 @@ begin
 	target_proc : process(id_pc, id_immed, ifd_target, id_jump, id_branch)
 	    variable var_target : std_logic_vector(COUNTER_LENGTH-1 downto 0);
 	begin
-	
-	    id_target <= (others => '0');
-	    id_tctrl  <= '0';
-	
 	    if (id_jump = '1') or (id_branch = '1') then
 	
 	        var_target := std_logic_vector(
@@ -64,6 +60,9 @@ begin
 	        if var_target /= ifd_target then
 	            id_tctrl <= '1';
 	        end if;
+		else 
+			id_target <= (others => '0');
+	   		id_tctrl  <= '0';
 	
 	    end if;
 	
@@ -72,9 +71,9 @@ begin
 	----------------------------------------------------------------
 	-- Process 2 : State Lookup + Prediction + Writeback
 	----------------------------------------------------------------
-	state_proc : process(id_pc, id_jump, id_branch, ex_pc, exw_state, exw_sctrl, TSB)
+	state_proc : process(id_pc, id_jump, id_branch, ex_pc, exw_state, exw_sctrl)
 	    variable i, j    : integer range 0 to 2**(COUNTER_LENGTH)-1;
-	    variable state   : std_logic_vector(1 downto 0) := "10";
+	    variable state   : std_logic_vector(1 downto 0);
 	    variable pctrl   : std_logic;
 	    variable target  : std_logic_vector(COUNTER_LENGTH-1 downto 0);
 	begin

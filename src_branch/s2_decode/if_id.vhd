@@ -14,7 +14,7 @@ entity if_id is
 		iff_target	: in std_logic_vector(COUNTER_LENGTH-1 downto 0);
 		
 		id_pc		: out std_logic_vector(COUNTER_LENGTH-1 downto 0);
-		id_instruc 	: out std_logic_vector(INSTRUCTION_LENGTH-1 downto 0):= (others => '-'); 
+		id_instruc 	: out std_logic_vector(INSTRUCTION_LENGTH-1 downto 0); 
 		ifd_target	: out std_logic_vector(COUNTER_LENGTH-1 downto 0)
 		);
 end if_id;
@@ -26,17 +26,10 @@ begin
 	-- ? BETTER: Proper synchronous process
 	if_id : process (clk)	
 	begin 	   
-		
-		if flush_ctrl = '1' then
+		if (reset_bar = '0') or (flush_ctrl = '1') then
 			id_instruc  <= NOP_INSTRUCTION;
-			id_pc       <= (others => '-');
-			ifd_target  <= (others => '-');
-		end if;
-		
-		if reset_bar = '0' then
-			id_instruc  <= NOP_INSTRUCTION;
-			id_pc       <= (others => '-');
-			ifd_target  <= (others => '-');
+			id_pc       <= (others => '0');
+			ifd_target  <= (others => '0');
 		elsif rising_edge(clk) then	
 			if enable = '1' then
 				id_instruc  <= if_instruc;

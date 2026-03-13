@@ -7,8 +7,8 @@ entity instruction_file is
 	port(				  
 	  if_pc			: in std_logic_vector(COUNTER_LENGTH-1 downto 0);	
 	  in_file		: in std_logic_vector(FILE_SIZE-1 downto 0); 
-	  reset_bar	: in std_logic;
-	  if_instruc	: out std_logic_vector(INSTRUCTION_LENGTH-1 downto 0) := NOP_INSTRUCTION
+	  reset_bar		: in std_logic;
+	  if_instruc	: out std_logic_vector(INSTRUCTION_LENGTH-1 downto 0)
 	);
 end entity;
 

@@ -12,8 +12,8 @@ entity ex_wb is
 		ex_rd_ptr	: in std_logic_vector(ADDRESS_LENGTH-1 downto 0);
 		ex_wback	: in std_logic;		  
 		
-		wb_rd		: out std_logic_vector(REGISTER_LENGTH-1 downto 0) := (others => '-');
-		wb_rd_ptr	: out std_logic_vector(ADDRESS_LENGTH-1 downto 0) := (others => '-');
+		wb_rd		: out std_logic_vector(REGISTER_LENGTH-1 downto 0);
+		wb_rd_ptr	: out std_logic_vector(ADDRESS_LENGTH-1 downto 0);
 		wb_wback	: out std_logic := '0'
 	);
 end ex_wb;
@@ -26,7 +26,6 @@ begin
 		
 		if reset_bar = '0' then 
 			wb_wback <= '0'; 	  
-			
 			wb_rd 	  <= (others => '-');
 			wb_rd_ptr <= (others => '-');
 		elsif rising_edge(clk) then 

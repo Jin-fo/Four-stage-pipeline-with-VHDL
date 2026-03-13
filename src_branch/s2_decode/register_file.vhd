@@ -28,10 +28,9 @@ architecture behavior of register_file is
 begin		
 		
 	register_file : process(read_sel, id_rs3_ptr, id_rs2_ptr, id_rs1_ptr, wb_wback)		
-		variable var_rs3 	: std_logic_vector(REGISTER_LENGTH-1 downto 0);
-		variable var_rs2 	: std_logic_vector(REGISTER_LENGTH-1 downto 0);
-		variable var_rs1 	: std_logic_vector(REGISTER_LENGTH-1 downto 0);
-		variable read_select	: std_logic_vector(2 downto 0) := (others => '0');
+		variable var_rs3 	: std_logic_vector(REGISTER_LENGTH-1 downto 0) := (others => '-');
+		variable var_rs2 	: std_logic_vector(REGISTER_LENGTH-1 downto 0) := (others => '-');
+		variable var_rs1 	: std_logic_vector(REGISTER_LENGTH-1 downto 0) := (others => '-');
 	begin			   
 	    -----------------------------------------------------------------
         -- Read register values

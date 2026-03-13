@@ -25,37 +25,37 @@ architecture behavior of pc is
 	signal start_zero: std_logic := '1';  -- flag for first rising edge
 begin  
 	
-pc_register : process(clk, reset_bar)
-begin
-    if reset_bar = '0' then
-        pc_reg <= (others => '-');
-    elsif rising_edge(clk) then
-        if enable = '1' then
-            if start_zero = '1' then
-                pc_reg <= (others => '0');   -- output 0 on first rising edge
-                start_zero <= '0';           -- clear the first cycle flag
-            elsif flush_ctrl = '1' then
-                pc_reg <= unsigned(ex_pc) + INCREMENT + INCREMENT;  -- load ex_pc + 2
-            elsif id_pctrl = '1' then
-                pc_reg <= unsigned(pred_pc) + INCREMENT;            -- load pred_pc + 1
-            elsif pc_reg < MAX_COUNT-1 then
-                pc_reg <= pc_reg + INCREMENT; -- normal increment
-            end if;
-        end if;
-    end if;
-end process;
-
-------------------------------------------------------------------
--- Combinational output: immediate response to control signals
-------------------------------------------------------------------
-pc_output : process(pc_reg, flush_ctrl, ex_pc, id_pctrl, pred_pc)
-begin
-    if flush_ctrl = '1' then
-        if_pc <= std_logic_vector(unsigned(ex_pc) + INCREMENT);
-    elsif id_pctrl = '1' then
-        if_pc <= pred_pc;
-    else
-        if_pc <= std_logic_vector(pc_reg);
-    end if;
-end process;
+	pc_register : process(clk, reset_bar)
+	begin
+	    if reset_bar = '0' then
+	        pc_reg <= (others => '-');
+	    elsif rising_edge(clk) then
+	        if enable = '1' then
+	            if start_zero = '1' then
+	                pc_reg <= (others => '0');   -- output 0 on first rising edge
+	                start_zero <= '0';           -- clear the first cycle flag
+	            elsif flush_ctrl = '1' then
+	                pc_reg <= unsigned(ex_pc) + INCREMENT + INCREMENT;  -- load ex_pc + 2
+	            elsif id_pctrl = '1' then
+	                pc_reg <= unsigned(pred_pc) + INCREMENT;            -- load pred_pc + 1
+	            elsif pc_reg < MAX_COUNT-1 then
+	                pc_reg <= pc_reg + INCREMENT; -- normal increment
+	            end if;
+	        end if;
+	    end if;
+	end process;
+	
+	------------------------------------------------------------------
+	-- Combinational output: immediate response to control signals
+	------------------------------------------------------------------
+	pc_output : process(pc_reg, flush_ctrl, ex_pc, id_pctrl, pred_pc)
+	begin
+	    if flush_ctrl = '1' then
+	        if_pc <= std_logic_vector(unsigned(ex_pc) + INCREMENT);
+	    elsif id_pctrl = '1' then
+	        if_pc <= pred_pc;
+	    else
+	        if_pc <= std_logic_vector(pc_reg);
+	    end if;
+	end process;
 end architecture;
