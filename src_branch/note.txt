@@ -1,0 +1,12 @@
+Powershell commend:
+
+## Directory
+cd C:\Users\Jin\Downloads\Multimedia_Processor_Unit\Multimedia_Processor_Unit\src
+
+## Building
+$env:PATH += ";C:\msys64\usr\bin;C:\msys64\mingw64\bin"
+
+g++ -std=c++17 -O2 assembler\mmu_assembler.cpp -o mmu_assembler.exe
+
+## complied
+.\mmu_assembler.exe assembler\control_hazard_tests.asm instruction_file.txt
