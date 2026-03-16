@@ -8,17 +8,17 @@ The complete 4-stage pipelines is designed at the register transfer level (RTL) 
 The complete top-level MMU model is then instantiated with another test bench to validate the completeness of the four-stage pipeline, where each instruction will cycle through all stages of the pipeline. The resulting outputs will demonstrate the operational behavior and status of each pipeline stage during execution. 
 
 ### Four-stage Multimedia ALU Pipeline Block Diagram 
-![System diagram](Block_Diagram.png)
+![System diagram](images/Block_Diagram.png)
 > **Note:** Diagram showing Instruction Fetch, Register File, ALU, and Write-back of the complete 4-stage pipeline, emphasizing the MMU stage of the ALU.
 
 ### Register Write Back
-![System diagram](Register_Write_Back.png)
+![System diagram](images/Register_Write_Back.png)
 > Overview of the register write-back path showing how computed results are returned to the destination register at the end of the pipeline.
 
 ### Forward Unit to ALU
-![System diagram](Forward_to_ALU.png)
+![System diagram](images/Forward_to_ALU.png)
 > Overview of the ALU forwarding mechanism that bypasses register write-back delays by routing recent results directly into the execution stage.
 
 ### Synplify Pro RTL
-![System diagram](Synplify_RTL.png)
+![System diagram](images/Synplify_RTL.png)
 >  Hieracherial view of the complete 4-stages pipeline synthesized using Synpify Pro.
