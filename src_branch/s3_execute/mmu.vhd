@@ -16,14 +16,17 @@ entity mmu is
 	fw_rs1		: in std_logic_vector(REGISTER_LENGTH-1 downto 0); 
 	ex_immed	: in std_logic_vector(IMMEDIATE_LENGTH-1 downto 0);	
 	
-	--branching	   
+	--branching	 
+	ex_pc		: in std_logic_vector(COUNTER_LENGTH-1 downto 0);
 	ex_pctrl	: in std_logic;	  
 	ex_brch		: in std_logic;
 	
-	--outputs	
-	pc_sctrl	: out std_logic;
-	flush_ctrl	: out std_logic;			 
-	ex_rd		: out std_logic_vector(REGISTER_LENGTH-1 downto 0)
+	--outputs
+	pc_sctrl	: out std_logic := '0';
+	flush_ctrl	: out std_logic := '0'; 
+	brch_pc		: out std_logic_vector(COUNTER_LENGTH-1 downto 0);
+	ex_rd		: out std_logic_vector(REGISTER_LENGTH-1 downto 0) 
+	
 	);
 end entity;
 
@@ -65,11 +68,18 @@ begin
 						
 						var_ctrl
 					); 
-					if var_ctrl = ex_pctrl then 	
-						flush_ctrl <= '0';
+
+					if (ex_pctrl = '1' and var_ctrl = '0') then		--should not branch, pc <= ex_pc + 1,	
+						brch_pc	<= std_logic_vector(unsigned(ex_pc) + INCREMENT);		   		
+					elsif (ex_pctrl = '0' and var_ctrl = '1') then	--should branch, pc <= ex_pc + immed
+						brch_pc <= std_logic_vector(
+							            resize(signed(ex_pc), COUNTER_LENGTH) +
+							            resize(signed(ex_immed), COUNTER_LENGTH)
+							        );										
 					else
-						flush_ctrl <= '1';
-					end if ; 
+						brch_pc	<= (others => '-');	 			-- no branch excuted 
+					end if ; 	   
+					flush_ctrl <= var_ctrl xor ex_pctrl;
 					pc_sctrl <= var_ctrl;
 					
 				else 

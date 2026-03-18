@@ -25,8 +25,14 @@ begin
 	
 	-- ? BETTER: Proper synchronous process
 	if_id : process (clk)	
-	begin 	   
-		if (reset_bar = '0') or (flush_ctrl = '1') then
+	begin 	   				  
+		if (flush_ctrl = '1') then
+			id_instruc  <= NOP_INSTRUCTION;
+			id_pc       <= (others => '0');
+			ifd_target  <= (others => '0');
+		end if;
+		
+		if (reset_bar = '0') then
 			id_instruc  <= NOP_INSTRUCTION;
 			id_pc       <= (others => '0');
 			ifd_target  <= (others => '0');

@@ -12,7 +12,7 @@ entity pc is
 	pred_pc		: in std_logic_vector(COUNTER_LENGTH-1 downto 0);
 	id_pctrl	: in std_logic;	  
 	
-	ex_pc 		: in std_logic_vector(COUNTER_LENGTH-1 downto 0); 
+	brch_pc 		: in std_logic_vector(COUNTER_LENGTH-1 downto 0); 
 	flush_ctrl	: in std_logic;
 	
 	if_pc	: out std_logic_vector(COUNTER_LENGTH-1 downto 0) := (others => '-')
@@ -35,7 +35,7 @@ begin
 	                pc_reg <= (others => '0');   -- output 0 on first rising edge
 	                start_zero <= '0';           -- clear the first cycle flag
 	            elsif flush_ctrl = '1' then
-	                pc_reg <= unsigned(ex_pc) + INCREMENT + INCREMENT;  -- load ex_pc + 2
+	                pc_reg <= unsigned(brch_pc) + INCREMENT;  -- load brch_pc + 1
 	            elsif id_pctrl = '1' then
 	                pc_reg <= unsigned(pred_pc) + INCREMENT;            -- load pred_pc + 1
 	            elsif pc_reg < MAX_COUNT-1 then
@@ -48,10 +48,10 @@ begin
 	------------------------------------------------------------------
 	-- Combinational output: immediate response to control signals
 	------------------------------------------------------------------
-	pc_output : process(pc_reg, flush_ctrl, ex_pc, id_pctrl, pred_pc)
+	pc_output : process(pc_reg, flush_ctrl, brch_pc, id_pctrl, pred_pc)
 	begin
 	    if flush_ctrl = '1' then
-	        if_pc <= std_logic_vector(unsigned(ex_pc) + INCREMENT);
+	        if_pc <= brch_pc;
 	    elsif id_pctrl = '1' then
 	        if_pc <= pred_pc;
 	    else

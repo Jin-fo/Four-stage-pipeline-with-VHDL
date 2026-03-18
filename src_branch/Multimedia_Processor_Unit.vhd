@@ -94,7 +94,7 @@ entity Multimedia_Processor_Unit is
     fw_rs2_i     : out std_logic_vector(REGISTER_LENGTH-1 downto 0);
     fw_rs1_i     : out std_logic_vector(REGISTER_LENGTH-1 downto 0);
     ex_rd_i      : out std_logic_vector(REGISTER_LENGTH-1 downto 0);
-
+	brch_pc_i 	 : out std_logic_vector(COUNTER_LENGTH-1 downto 0);
     pc_sctrl_i   : out std_logic;
     flush_ctrl_i : out std_logic;
 
@@ -195,7 +195,7 @@ architecture structural of Multimedia_Processor_Unit is
     signal fw_rs1     : std_logic_vector(REGISTER_LENGTH-1 downto 0);
 	
     signal ex_rd      : std_logic_vector(REGISTER_LENGTH-1 downto 0);
-
+	signal brch_pc	  : std_logic_vector(COUNTER_LENGTH-1 downto 0);
     signal pc_sctrl   : std_logic;
     signal flush_ctrl : std_logic;
 
@@ -223,7 +223,7 @@ begin
 		--input
 		pred_pc		=> pred_pc,
 		id_pctrl	=> id_pctrl,
-		ex_pc		=> ex_pc,
+		brch_pc		=> brch_pc,
 		flush_ctrl 	=> flush_ctrl,
 		
 		--output
@@ -404,13 +404,15 @@ begin
 		fw_rs1		=> fw_rs1,
 		ex_immed	=> ex_immed,
 		
-		--branch
+		--branch	   \
+		ex_pc		=> ex_pc,
 		ex_pctrl	=> ex_pctrl,
 		ex_brch		=> ex_brch,
 		
-		--output
+		--output	
 		pc_sctrl	=> pc_sctrl,
 		flush_ctrl 	=> flush_ctrl,
+		brch_pc		=> brch_pc,
 		ex_rd		=> ex_rd);
 		
 	S_FSM : entity work.state_fsm(behavior)
@@ -504,7 +506,7 @@ begin
 	fw_rs1_i    <= fw_rs1;
 	
 	ex_rd_i     <= ex_rd;
-	
+	brch_pc_i	<= brch_pc;
 	pc_sctrl_i  <= pc_sctrl;
 	flush_ctrl_i<= flush_ctrl;
 	

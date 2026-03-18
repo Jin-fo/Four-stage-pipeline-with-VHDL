@@ -18,6 +18,7 @@ architecture test_bench of mmu_LDI_tb is
 	
 	--branching
 	signal ex_pctrl		: std_logic;
+	signal ex_pc		: std_logic_vector(COUNTER_LENGTH-1 downto 0);
 	signal ex_brch		: std_logic;
 	signal pc_sctrl		: std_logic;
 	signal flush_ctrl 	: std_logic;
@@ -76,11 +77,11 @@ begin
         ex_immed    => ex_immed,
 		
 		ex_pctrl	=> ex_pctrl,
-		ex_brch		=> ex_brch,
+		ex_pc		=> ex_pc,
 		
 		pc_sctrl	=> pc_sctrl,
-		flush_ctrl	=> flush_ctrl,
-		
+		flush_ctrl	=> flush_ctrl, 
+		ex_brch		=> ex_brch,
         ex_rd   	=> ex_rd
 		);
 	

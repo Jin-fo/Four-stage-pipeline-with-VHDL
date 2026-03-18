@@ -105,7 +105,8 @@ architecture test_bench of Multimedia_Processor_Unit_tb is
     signal fw_rs2     : std_logic_vector(REGISTER_LENGTH-1 downto 0);
     signal fw_rs1     : std_logic_vector(REGISTER_LENGTH-1 downto 0);
 	
-    signal ex_rd      : std_logic_vector(REGISTER_LENGTH-1 downto 0);
+    signal ex_rd      : std_logic_vector(REGISTER_LENGTH-1 downto 0); 
+	signal brch_pc	  : std_logic_vector(COUNTER_LENGTH-1 downto 0);
     signal pc_sctrl   : std_logic;
     signal flush_ctrl : std_logic;
 
@@ -118,7 +119,7 @@ architecture test_bench of Multimedia_Processor_Unit_tb is
     -- ======================
     -- Write Back
     -- ======================
-    signal wb_rd      : std_logic_vector(REGISTER_LENGTH-1 downto 0);
+    signal wb_rd      : std_logic_vector(REGISTER_LENGTH-1 downto 0); 
     signal wb_rd_ptr  : std_logic_vector(ADDRESS_LENGTH-1 downto 0);
     signal wb_wback   : std_logic;
     
@@ -207,7 +208,8 @@ begin
 			fw_rs3_i    => fw_rs3,
             fw_rs2_i    => fw_rs2,
             fw_rs1_i    => fw_rs1,
-            ex_rd_i     => ex_rd,
+            ex_rd_i     => ex_rd,	
+			brch_pc_i 	=> brch_pc,
             pc_sctrl_i  => pc_sctrl,
             flush_ctrl_i=> flush_ctrl,
 

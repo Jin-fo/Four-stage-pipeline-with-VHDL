@@ -58,15 +58,17 @@ begin
 	    iff_target <= var_target; 
 	end process; 
 	
-	debug : process(BTB) is
+	debug : process(id_tctrl, BTB) is
 	    variable bit_index : integer := 0;
-	begin
-	    bit_index := 0;
-	    for i in 0 to (2**(COUNTER_LENGTH)-1) loop
-	        out_buffer(bit_index) <= BTB(i).valid;
-	        out_buffer(bit_index + COUNTER_LENGTH downto bit_index + 1)                                                                                                                                   <= BTB(i).target;
-	        bit_index := bit_index + (1 + COUNTER_LENGTH);
-	    end loop;
+	begin		
+		if id_tctrl = '1' then
+		    bit_index := 0;
+		    for i in 0 to (2**(COUNTER_LENGTH)-1) loop
+		        out_buffer(bit_index) <= BTB(i).valid;
+		        out_buffer(bit_index + COUNTER_LENGTH downto bit_index + 1)                                                                                                                                   <= BTB(i).target;
+		        bit_index := bit_index + (1 + COUNTER_LENGTH);
+		    end loop;
+		end if;
 	end process debug;
 	
 end architecture;

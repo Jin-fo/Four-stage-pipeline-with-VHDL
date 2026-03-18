@@ -18,6 +18,7 @@ architecture test_bench of mmu_STM_tb is
 	
 	--branching
 	signal ex_pctrl		: std_logic;
+	signal ex_pc		: std_logic_vector(COUNTER_LENGTH-1 downto 0);
 	signal ex_brch		: std_logic;
 	signal pc_sctrl		: std_logic;
 	signal flush_ctrl 	: std_logic;
@@ -26,7 +27,7 @@ architecture test_bench of mmu_STM_tb is
 	signal ex_rd		: std_logic_vector(REGISTER_LENGTH-1 downto 0);
 	
 	constant period: time := 20ns;	 
-    --------------------------------------------------------------------
+	--------------------------------------------------------------------
     -- Helper: Convert std_logic_vector ? hex string (portable)
     --------------------------------------------------------------------
     function slv_to_hex(slv : std_logic_vector) return string is
@@ -63,9 +64,9 @@ architecture test_bench of mmu_STM_tb is
 		end loop;
 		return result;
 	end function;
-    --------------------------------------------------------------------
-
-begin  
+    --------------------------------------------------------------------		
+begin 
+	
 	UUT : entity work.mmu 
 		port map(
         ex_opcode      => ex_opcode,
@@ -76,14 +77,15 @@ begin
         ex_immed    => ex_immed,
 		
 		ex_pctrl	=> ex_pctrl,
-		ex_brch		=> ex_brch,
-		pc_sctrl	=> pc_sctrl,
-		flush_ctrl	=> flush_ctrl,
+		ex_pc		=> ex_pc,
 		
+		pc_sctrl	=> pc_sctrl,
+		flush_ctrl	=> flush_ctrl, 
+		ex_brch		=> ex_brch,
         ex_rd   	=> ex_rd
 		);
-		   
-	-- Stimulus process
+	
+	-- stimulus process
 	stim_proc : process
 	begin
 ----------------------------------------------------------------
