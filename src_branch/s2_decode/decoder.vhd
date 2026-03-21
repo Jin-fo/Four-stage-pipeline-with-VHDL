@@ -5,22 +5,23 @@ use work.numeric_var.all;
 
 entity decoder is 
 	port(
-	-- input
+	--input
 	id_instruc	: in std_logic_vector(INSTRUCTION_LENGTH-1 downto 0);  
 	
-	-- outputs
+	--outputs(data)
 	id_opcode		: out std_logic_vector(OPCODE_LENGTH-1 downto 0);
 	id_rs3_ptr		: out std_logic_vector(ADDRESS_LENGTH-1 downto 0);
 	id_rs2_ptr		: out std_logic_vector(ADDRESS_LENGTH-1 downto 0);
 	id_rs1_ptr		: out std_logic_vector(ADDRESS_LENGTH-1 downto 0); 	
 	id_rd_ptr		: out std_logic_vector(ADDRESS_LENGTH-1 downto 0);
 	id_immed		: out std_logic_vector(IMMEDIATE_LENGTH-1 downto 0);  
-	
 	read_sel		: out std_logic_vector(2 downto 0); 	
 	
-	-- controls
-	id_wback		: out std_logic;
-	id_branch    	: out std_logic;
+	--controls(data)
+	id_wback		: out std_logic;  
+	
+	--controls(branch)
+	id_bctrl    	: out std_logic;
 	id_jump	 	: out std_logic
 	);
 end entity;
@@ -45,7 +46,7 @@ begin
 				read_sel	<= "100";
 				
 				id_wback 	<= '1';	
-				id_branch	<= '0';
+				id_bctrl	<= '0';
 				id_jump		<= '0';
 				
 								   	
@@ -62,7 +63,7 @@ begin
 				read_sel	<= "111";	
 				
 				id_wback 	<= '1';
-				id_branch	<= '0';
+				id_bctrl	<= '0';
 				id_jump		<= '0';
 				
 			when "11" => 
@@ -75,7 +76,7 @@ begin
 					id_rd_ptr	<= id_instruc(INSTRUCTION_LENGTH-21 downto 0);
 					
 					read_sel 	<= "011";
-					id_branch	<= '0';
+					id_bctrl	<= '0';
 					id_jump		<= '0';
 					id_wback 	<= '1';
 					
@@ -108,20 +109,19 @@ begin
 					id_rd_ptr 	<= (others => '-');
 					id_immed 	<= std_logic_vector(resize(signed(id_instruc(INSTRUCTION_LENGTH-7 downto INSTRUCTION_LENGTH-15)), 16));
 					
-					id_wback 	<= '0';	  
+					id_wback 	<= '0';	   
+					id_bctrl 	<= '1';
 					case id_instruc(INSTRUCTION_LENGTH-3 downto INSTRUCTION_LENGTH-6) is
 						when "1000" | "1001" | "1010" | "1011" =>
-							id_branch <= '1';
 							id_jump <= '0';	
 							read_sel 	<= "011";
 							
 						when "1100" =>
-							id_branch <= '0';
 							id_jump <= '1';	
 							read_sel <= "000";
 							
 						when others => 
-							id_branch <= '0';
+							id_bctrl <= '0';
 							id_jump <= '0';	
 							read_sel 	<= "011";
 						end case;

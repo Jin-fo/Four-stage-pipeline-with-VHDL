@@ -5,14 +5,20 @@ use work.numeric_var.all;
 
 entity target_buffer is 
 	port (   
-		if_pc           : in std_logic_vector(COUNTER_LENGTH-1 downto 0);
-		
-		id_tctrl        : in std_logic;
-		id_pc           : in std_logic_vector(COUNTER_LENGTH-1 downto 0);
-		id_target       : in std_logic_vector(COUNTER_LENGTH-1 downto 0);
-		
-		iff_target      : out std_logic_vector(COUNTER_LENGTH-1 downto 0);
-		out_buffer	  : out std_logic_vector(BUFFER_SIZE-1 downto 0)
+	clk				: std_logic;
+	--input
+	if_pc           : in std_logic_vector(COUNTER_LENGTH-1 downto 0);
+	
+	--wback(branch)
+	id_tctrl        : in std_logic;
+	id_pc           : in std_logic_vector(COUNTER_LENGTH-1 downto 0);
+	id_target       : in std_logic_vector(COUNTER_LENGTH-1 downto 0);
+	
+	--outputs(branch) 
+	iff_target      : out std_logic_vector(COUNTER_LENGTH-1 downto 0);
+	
+	--outputs(debug)
+	out_buffer	  : out std_logic_vector(BUFFER_SIZE-1 downto 0)
 	); 
 end entity;
 
@@ -27,12 +33,13 @@ architecture behavior of target_buffer is
     signal BTB : BTB_array := (others => (
         valid  => '0',
         target => (others => '0')
-    ));   
+    ));    
+	
+	signal wb_j	: integer range 0 to 2**(COUNTER_LENGTH)-1;
 begin       
     
-	main : process(if_pc) is
-	    variable i : integer range 0 to 2**(COUNTER_LENGTH)-1; 
-	    variable j : integer range 0 to 2**(COUNTER_LENGTH)-1;  
+	read : process(if_pc) is
+	    variable i : integer range 0 to 2**(COUNTER_LENGTH)-1;   
 	    variable var_target : std_logic_vector(COUNTER_LENGTH-1 downto 0);
 	begin    
 	    
@@ -42,21 +49,25 @@ begin
 	        var_target := BTB(i).target;
 	    else 
 	        var_target := (others => '0');
-	    end if;  
-	    
-	    -- Write/update and forward target buffer
-	    if id_tctrl = '1' then   
-	        j := to_integer(unsigned(id_pc));
-	        BTB(j).target <= id_target;
-	        BTB(j).valid <= '1';     
-	        
-	        if i = j then 
-	            var_target := id_target;
-	        end if;	
-	    end if;  
+	    end if;    	  
+		-- forward target buffer
+		if if_pc = id_pc then
+			var_target := id_target;
+	    end if;	 
 	    
 	    iff_target <= var_target; 
 	end process; 
+	
+	write : process(clk, id_tctrl, id_pc, id_target)	 
+		variable j : integer range 0 to 2**(COUNTER_LENGTH)-1;   
+	begin
+		-- Write/update target buffer
+	    if falling_edge(clk) and id_tctrl = '1' then   
+	        j := to_integer(unsigned(id_pc));
+	        BTB(j).target <= id_target;
+	        BTB(j).valid <= '1';     
+	    end if;  
+	end process;
 	
 	debug : process(id_tctrl, BTB) is
 	    variable bit_index : integer := 0;

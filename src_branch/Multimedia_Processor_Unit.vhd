@@ -10,14 +10,19 @@ entity Multimedia_Processor_Unit is
 	enable		: in std_logic;
 	reset_bar 	: in std_logic;
 	
-	in_file     : in std_logic_vector(FILE_SIZE-1 downto 0);   
+	in_Ifile    : in std_logic_vector(FILE_SIZE-1 downto 0);   
 	--unit output  
-	out_buffer 	: out std_logic_vector(BUFFER_SIZE-1 downto 0);
-	out_file	: out std_logic_vector(REGISTER_SIZE-1 downto 0);  
+	out_Tbuffer : out std_logic_vector(BUFFER_SIZE-1 downto 0);	
+	out_Sbuffer	: out std_logic_vector(BUFFER_SIZE-1 downto 0);	
+	
+	out_Rfile	: out std_logic_vector(REGISTER_SIZE-1 downto 0);  
 	
     -- ======================
     -- IF stage (debug)
-    -- ====================== 
+    -- ======================
+	pc_current_i : out std_logic_vector(COUNTER_LENGTH-1 downto 0);
+	pc_next_i    : out std_logic_vector(COUNTER_LENGTH-1 downto 0);
+
     if_pc_i      : out std_logic_vector(COUNTER_LENGTH-1 downto 0);
     if_instruc_i : out std_logic_vector(INSTRUCTION_LENGTH-1 downto 0);
 
@@ -47,14 +52,14 @@ entity Multimedia_Processor_Unit is
     read_sel_i   : out std_logic_vector(2 downto 0);
 
     id_wback_i   : out std_logic;
-    id_branch_i  : out std_logic;
+    id_bctrl_i  : out std_logic;
     id_jump_i    : out std_logic;
 
     -- ======================
     -- Branch Predictor (debug)
     -- ======================
-    idw_target_i : out std_logic_vector(COUNTER_LENGTH-1 downto 0);
-    idw_tctrl_i  : out std_logic;
+    id_target_i : out std_logic_vector(COUNTER_LENGTH-1 downto 0);
+    id_tctrl_i  : out std_logic;
 
     id_state_i   : out std_logic_vector(STATE_LENGTH-1 downto 0);
     id_brch_i     : out std_logic;
@@ -85,7 +90,7 @@ entity Multimedia_Processor_Unit is
     ex_state_i   : out std_logic_vector(STATE_LENGTH-1 downto 0);
     ex_wback_i   : out std_logic;
     ex_pctrl_i   : out std_logic;
-    ex_brch_i     : out std_logic;
+    ex_bctrl_i     : out std_logic;
 
     -- ======================
     -- Execute / Control (debug)
@@ -93,6 +98,7 @@ entity Multimedia_Processor_Unit is
 	fw_rs3_i     : out std_logic_vector(REGISTER_LENGTH-1 downto 0);
     fw_rs2_i     : out std_logic_vector(REGISTER_LENGTH-1 downto 0);
     fw_rs1_i     : out std_logic_vector(REGISTER_LENGTH-1 downto 0);
+	fw_state_i	 : out std_logic_vector(1 downto 0);
     ex_rd_i      : out std_logic_vector(REGISTER_LENGTH-1 downto 0);
 	brch_pc_i 	 : out std_logic_vector(COUNTER_LENGTH-1 downto 0);
     pc_sctrl_i   : out std_logic;
@@ -101,22 +107,29 @@ entity Multimedia_Processor_Unit is
     -- ======================
     -- Write-back FSM (debug)
     -- ======================
-    exw_state_i  : out std_logic_vector(1 downto 0);
-    exw_sctrl_i  : out std_logic;
+    fsm_state_i  : out std_logic_vector(1 downto 0);
+    fsm_sctrl_i  : out std_logic;
 
     -- ======================
     -- Write Back stage (debug)
     -- ======================
     wb_rd_i      : out std_logic_vector(REGISTER_LENGTH-1 downto 0);
     wb_rd_ptr_i  : out std_logic_vector(ADDRESS_LENGTH-1 downto 0);
-    wb_wback_i   : out std_logic
+    wb_wback_i   : out std_logic;	  
+	
+	wb_pc_i	  	 : out std_logic_vector(COUNTER_LENGTH-1 downto 0);
+	wb_sctrl_i	 : out std_logic;
+	wb_state_i	 : out std_logic_vector(1 downto 0)	 
 	);
 end Multimedia_Processor_Unit;
 
 architecture structural of Multimedia_Processor_Unit is	 
    	-- ======================
     -- Global / IF stage
-    -- ====================== 
+    -- ====================== 	  
+	signal pc_current : std_logic_vector(COUNTER_LENGTH-1 downto 0);
+	signal pc_next    : std_logic_vector(COUNTER_LENGTH-1 downto 0);
+
     signal if_pc        : std_logic_vector(COUNTER_LENGTH-1 downto 0);
     signal if_instruc  : std_logic_vector(INSTRUCTION_LENGTH-1 downto 0);
 
@@ -147,14 +160,14 @@ architecture structural of Multimedia_Processor_Unit is
     signal read_sel    : std_logic_vector(2 downto 0);
 
     signal id_wback    : std_logic;
-    signal id_branch   : std_logic;
+    signal id_bctrl   : std_logic;
     signal id_jump     : std_logic;
 
     -- ======================
     -- Branch Predictor
     -- ======================
-    signal idw_target  : std_logic_vector(COUNTER_LENGTH-1 downto 0);
-    signal idw_tctrl   : std_logic;
+    signal id_target  : std_logic_vector(COUNTER_LENGTH-1 downto 0);
+    signal id_tctrl   : std_logic;
 
     signal id_state    : std_logic_vector(STATE_LENGTH-1 downto 0);
     signal id_brch      : std_logic;
@@ -185,7 +198,7 @@ architecture structural of Multimedia_Processor_Unit is
     signal ex_state   : std_logic_vector(STATE_LENGTH-1 downto 0);
     signal ex_wback   : std_logic;
     signal ex_pctrl   : std_logic;
-    signal ex_brch     : std_logic;
+    signal ex_bctrl     : std_logic;
 
     -- ======================
     -- Execute / MMU / ALU
@@ -193,6 +206,7 @@ architecture structural of Multimedia_Processor_Unit is
 	signal fw_rs3     : std_logic_vector(REGISTER_LENGTH-1 downto 0);
     signal fw_rs2     : std_logic_vector(REGISTER_LENGTH-1 downto 0);
     signal fw_rs1     : std_logic_vector(REGISTER_LENGTH-1 downto 0);
+	signal fw_state	  : std_logic_vector(1 downto 0);
 	
     signal ex_rd      : std_logic_vector(REGISTER_LENGTH-1 downto 0);
 	signal brch_pc	  : std_logic_vector(COUNTER_LENGTH-1 downto 0);
@@ -202,8 +216,8 @@ architecture structural of Multimedia_Processor_Unit is
     -- ======================
     -- FSM write-back signals
     -- ======================	   
-    signal exw_state  : std_logic_vector(1 downto 0);
-    signal exw_sctrl  : std_logic;
+    signal fsm_state  : std_logic_vector(1 downto 0);
+    signal fsm_sctrl  : std_logic;
 
     -- ======================
     -- Write Back stage
@@ -211,43 +225,65 @@ architecture structural of Multimedia_Processor_Unit is
     signal wb_rd      : std_logic_vector(REGISTER_LENGTH-1 downto 0);
     signal wb_rd_ptr  : std_logic_vector(ADDRESS_LENGTH-1 downto 0);
     signal wb_wback   : std_logic; 	
+	signal wb_pc	  : std_logic_vector(COUNTER_LENGTH-1 downto 0);
+	signal wb_state	  :	std_logic_vector(1 downto 0);
+	signal wb_sctrl	  :	std_logic;
 
 begin				 
-	P_C : entity work.pc(behavior)				  
-		port map (	 
-		--setup
-		clk 		=> clk,	
-		enable		=> enable,
-		reset_bar 	=> reset_bar,
-		
-		--input
-		pred_pc		=> pred_pc,
-		id_pctrl	=> id_pctrl,
-		brch_pc		=> brch_pc,
-		flush_ctrl 	=> flush_ctrl,
-		
-		--output
-		if_pc 		=> if_pc); 
+	-- =========================
+	-- PC REGISTER
+	-- =========================
+	PC_REG : entity work.pc_reg(behavior)
+	    port map (
+	        clk        => clk,
+	        enable     => enable,
+	        reset_bar  => reset_bar,
+	        next_pc    => pc_next,
+	        pc_out     => pc_current
+	    );
+	
+	-- =========================
+	-- PC SELECT (COMBINATIONAL)
+	-- =========================
+	PC_SEL : entity work.pc_select(behavior)
+	    port map (
+	        pc_reg     => pc_current,
+	
+	        pred_pc    => pred_pc,
+	        id_pctrl   => id_pctrl,
+	
+	        brch_pc    => brch_pc,
+	        flush_ctrl => flush_ctrl,
+	
+	        next_pc    => pc_next,
+	        if_pc      => if_pc
+	    );
 		
 	T_BUFF : entity work.target_buffer(behavior)
 		port map ( 	
 		--input
-		if_pc		=> if_pc,	
-		id_tctrl	=> idw_tctrl,
+		clk			=> clk,
+		if_pc		=> if_pc,
+		
+		--wback(branch)
+		id_tctrl	=> id_tctrl,
 		id_pc  	  	=> id_pc,
-		id_target 	=> idw_target,
-		--output   
-		iff_target 	=> iff_target,
-		out_buffer	=> out_buffer);
+		id_target 	=> id_target, 
+		
+		--outputs(branch)   
+		iff_target 	=> iff_target, 
+		
+		--outputs(debug)
+		out_buffer	=> out_Tbuffer);
 
 	I_File : entity work.instruction_file(behavior)		
 		port map (	  
-		--input
+		--inputs(data)
 		if_pc 		=> if_pc,
-		in_file		=> in_file,	
-		reset_bar	=> reset_bar, 
+		reset_bar	=> reset_bar,
+		in_file		=> in_Ifile,	
 		
-		--output
+		--outputs(data)
 		if_instruc 	=> if_instruc);
 		
 	IF_ID : entity work.if_id(behavior)
@@ -256,14 +292,16 @@ begin
 		clk			=> clk,	  
 		enable		=> enable,
 		reset_bar 	=> reset_bar,
-		flush_ctrl  => flush_ctrl,
 		
-		--input				 
+		--inputs(data)				 
 		if_pc		=> if_pc,
 		if_instruc 	=> if_instruc,
-		iff_target 	=> iff_target,
+		iff_target 	=> iff_target,	
 		
-		--output	
+		--control
+		flush_ctrl  => flush_ctrl,
+		
+		--outputs(data)	
 		id_pc		=> id_pc,
 		id_instruc  => id_instruc,
 		ifd_target	=> ifd_target);
@@ -273,61 +311,81 @@ begin
 		--input
 		id_instruc  => id_instruc,
 		
-		--outputs
+		--outputs(data)
 		id_opcode	=> id_opcode,
 		id_rs3_ptr	=> id_rs3_ptr,
 		id_rs2_ptr	=> id_rs2_ptr,
 		id_rs1_ptr	=> id_rs1_ptr,
 		id_rd_ptr	=> id_rd_ptr,
 		id_immed	=> id_immed,
-		
 		read_sel   	=> read_sel,
 		
-		--controls
+		--controls(data)
 		id_wback	=> id_wback,
-		id_branch	=> id_branch,
+		
+		--controls(branch)
+		id_bctrl	=> id_bctrl,
 		id_jump		=> id_jump);
 	
-	B_PRED : entity work.predictor(behavior)
-		port map (
-		--input
-		id_pc		=> id_pc,
+	T_CRRT : entity work.target_correct(behavior)
+		port map ( 
+		--inputs(branch)
+		id_pc	 	=> id_pc,
 		id_immed	=> id_immed,
-		ifd_target  => ifd_target,
-		id_jump		=> id_jump,
-		id_branch   => id_branch,
-		ex_pc		=> ex_pc,
-		exw_state	=> exw_state,  
-		exw_sctrl	=> exw_sctrl, 
+		ifd_target	=> ifd_target,
+		id_bctrl	=> id_bctrl,
 		
-		--output
-		id_target	=> idw_target,
-		id_tctrl	=> idw_tctrl,
+		--outputs(branch)
+		id_target	=> id_target,
+		id_tctrl	=> id_tctrl);
 		
-		pred_pc		=> pred_pc,	  
-		id_pctrl	=> id_pctrl,
+	S_BUFF : entity work.state_buffer(behavior)
+		port map (
+		--inputs(branch)
+		id_pc		=> id_pc,
+		id_bctrl	=> id_bctrl, 
+		
+		--wback(branch)
+		wb_pc 		=> wb_pc,
+		wb_state    => wb_state,
+		wb_sctrl	=> wb_sctrl,
+		
+		--outputs(branch)
 		id_state	=> id_state,
-		id_brch		=> id_brch);
+		out_buffer	=> out_Sbuffer);
+		
+	B_PRED: entity work.predictor(behavior)
+		port map (	   
+		--inputs(branch) 
+		id_target	=> id_target,
+		id_state	=> id_state,
+		id_jump		=> id_jump,
+		
+		--outputs(branch)
+		pred_pc		=> pred_pc,
+		id_pctrl    => id_pctrl);
 
 	R_File : entity work.register_file(behavior)
 		port map (
-		--input	   
+		--inputs(data)	   
 		read_sel 	=> read_sel,
 		
 		id_rs3_ptr 	=> id_rs3_ptr, 
 		id_rs2_ptr	=> id_rs2_ptr, 
 		id_rs1_ptr	=> id_rs1_ptr,
 		
-		--write back 
+		--wback(data)  
 		wb_rd		=> wb_rd,	  
 		wb_rd_ptr	=> wb_rd_ptr,
 		wb_wback	=> wb_wback,	  
 		
-		--output			
-		out_file 	=> out_file,
+		--outputs(data)			
 		id_rs3	 	=> id_rs3,
 		id_rs2		=> id_rs2,
-		id_rs1		=> id_rs1);
+		id_rs1		=> id_rs1, 
+		
+		--outputs(debug)
+		out_file 	=> out_Rfile);
 		
 	ID_EX : entity work.id_ex(behavior)
 		port map (	
@@ -336,7 +394,7 @@ begin
 		enable		=> enable,
 		reset_bar 	=> reset_bar,
 		
-		--input
+		--inputs(data)
 		id_pc		=> id_pc,
 		id_opcode	=> id_opcode,
 		
@@ -349,13 +407,14 @@ begin
 		id_rs3_ptr	=> id_rs3_ptr,			
 		id_rs2_ptr	=> id_rs2_ptr,		  
 		id_rs1_ptr	=> id_rs1_ptr, 
-		id_state	=> id_state,
 		
+		--inputs(branch)
+		id_state	=> id_state,
 		id_wback	=> id_wback,
 		id_pctrl	=> id_pctrl,
-		id_brch		=> id_brch,
+		id_bctrl	=> id_bctrl,
 		
-		--output 
+		--outputs(data)
 		ex_pc		=> ex_pc,
 		ex_opcode	=> ex_opcode,
 		
@@ -368,15 +427,16 @@ begin
 		ex_rs3_ptr  => ex_rs3_ptr,
 		ex_rs2_ptr	=> ex_rs2_ptr,
 		ex_rs1_ptr	=> ex_rs1_ptr,
-		ex_state	=> ex_state,
 		
+		--outputs(branch)
+		ex_state	=> ex_state,
 		ex_wback	=> ex_wback,
 		ex_pctrl	=> ex_pctrl,
-		ex_brch		=> ex_brch); 
+		ex_bctrl	=> ex_bctrl); 
 		
 	FOR_WARD : entity work.forward(behavior)
 		port map (	   
-		--inputs
+		--inputs(data)
 		ex_rs3 		=> ex_rs3,
 		ex_rs2		=> ex_rs2,
 		ex_rs1		=> ex_rs1, 
@@ -384,69 +444,96 @@ begin
 		ex_rs3_ptr	=> ex_rs3_ptr,
 		ex_rs2_ptr	=> ex_rs2_ptr,
 		ex_rs1_ptr	=> ex_rs1_ptr,	
+		ex_pc 		=> ex_pc,  
 		
-		--write back
+		--inputs(branch)
+		ex_state	=> ex_state,
+		
+		--forward(data)
 		wb_rd		=> wb_rd,
 		wb_rd_ptr	=> wb_rd_ptr,
 		wb_wback	=> wb_wback,
 		
+		--forward(branch)
+		wb_state	=> wb_state,
+		wb_pc	   	=> wb_pc,
+		wb_sctrl	=> wb_sctrl,
+		
+		--outputs(data)
 		fw_rs3 		=> fw_rs3,
 		fw_rs2		=> fw_rs2,
-		fw_rs1		=> fw_rs1);
+		fw_rs1		=> fw_rs1, 	
+		
+		--output(branch)
+		fw_state	=> fw_state);
 		
 	MMU_ALU : entity work.mmu(behavior)
 		port map ( 
-		--inputs
+		--inputs(data)
 		ex_opcode	=> ex_opcode,		
-		
 		fw_rs3 		=> fw_rs3,
 		fw_rs2		=> fw_rs2,
 		fw_rs1		=> fw_rs1,
 		ex_immed	=> ex_immed,
 		
-		--branch	   \
+		--inputs(branch)	  
 		ex_pc		=> ex_pc,
 		ex_pctrl	=> ex_pctrl,
-		ex_brch		=> ex_brch,
+		ex_bctrl	=> ex_bctrl,
 		
-		--output	
+		--outputs(data)
+		ex_rd		=> ex_rd,
+		
+		--outputs(branch)	
 		pc_sctrl	=> pc_sctrl,
 		flush_ctrl 	=> flush_ctrl,
-		brch_pc		=> brch_pc,
-		ex_rd		=> ex_rd);
+		brch_pc		=> brch_pc);
 		
 	S_FSM : entity work.state_fsm(behavior)
 		port map (
-		--input
+		--inputs   
 		clk			=> clk,
-		ex_brch		=> ex_brch,
-		ex_state  	=> ex_state,
+		ex_bctrl	=> ex_bctrl,
+		fw_state  	=> fw_state,
+		pc_sctrl	=> pc_sctrl,  
 		
-		--output
-		pc_sctrl	=> pc_sctrl,		
-		exw_state   => exw_state,
-		exw_sctrl	=> exw_sctrl);
+		--outputs
+		fsm_state   => fsm_state,
+		fsm_sctrl	=> fsm_sctrl);
 		
-	EX_ID : entity work.ex_wb(behavior) 
+	EX_WB : entity work.ex_wb(behavior) 
 		port map ( 	 
 		--setup 
 		clk 		=> clk,
 		enable		=> enable,
 		reset_bar 	=> reset_bar,  	
 		
-		--input 
+		--inputs(data) 
 		ex_rd		=> ex_rd,
 		ex_rd_ptr	=> ex_rd_ptr, 
-		ex_wback	=> ex_wback,
+		ex_wback	=> ex_wback,  
 		
-		--output 		
+		--inputs(branch) 
+		ex_pc		=> ex_pc,
+		ex_sctrl  	=> fsm_sctrl,
+		ex_state	=> fsm_state,
+		
+		--outputs(data)	
 		wb_rd		=> wb_rd,
 		wb_rd_ptr	=> wb_rd_ptr,
-		wb_wback	=> wb_wback);		
+		wb_wback	=> wb_wback,
+		
+		--outputs(branch)
+		wb_pc		=> wb_pc,
+		wb_sctrl	=> wb_sctrl,
+		wb_state	=> wb_state
+		
+		);		
     -- ======================
     -- Debug signal exposure
     -- ======================  
-	
+	pc_current_i <= pc_current;
+	pc_next_i	<= pc_next;
 	if_pc_i       	<= if_pc;
 	if_instruc_i	<= if_instruc;
 	
@@ -470,11 +557,11 @@ begin
 	read_sel_i   <= read_sel;
 	
 	id_wback_i   <= id_wback;
-	id_branch_i  <= id_branch;
+	id_bctrl_i  <= id_bctrl;
 	id_jump_i   <= id_jump;
 	
-	idw_target_i <= idw_target;
-	idw_tctrl_i  <= idw_tctrl;
+	id_target_i <= id_target;
+	id_tctrl_i  <= id_tctrl;
 	
 	id_state_i   <= id_state;
 	id_brch_i     <= id_brch;
@@ -499,21 +586,26 @@ begin
 	ex_state_i  <= ex_state;
 	ex_wback_i  <= ex_wback;
 	ex_pctrl_i  <= ex_pctrl;
-	ex_brch_i    <= ex_brch;
+	ex_bctrl_i   <= ex_bctrl;
 	
 	fw_rs3_i    <= fw_rs3;
 	fw_rs2_i    <= fw_rs2;
 	fw_rs1_i    <= fw_rs1;
+	fw_state_i 	<= fw_state;
 	
 	ex_rd_i     <= ex_rd;
 	brch_pc_i	<= brch_pc;
 	pc_sctrl_i  <= pc_sctrl;
 	flush_ctrl_i<= flush_ctrl;
 	
-	exw_state_i <= exw_state;
-	exw_sctrl_i <= exw_sctrl;
+	fsm_state_i <= fsm_state;
+	fsm_sctrl_i <= fsm_sctrl;
 	
 	wb_rd_i     <= wb_rd;
 	wb_rd_ptr_i <= wb_rd_ptr;
-	wb_wback_i  <= wb_wback;
+	wb_wback_i  <= wb_wback; 
+	
+	wb_pc_i		<= wb_pc;
+	wb_sctrl_i	<= wb_sctrl;
+	wb_state_i  <= wb_state;
 end architecture;

@@ -38,7 +38,7 @@ begin
     --------------------------------------------------------------------
     dut : entity work.state_fsm
         port map (
-            clk      => clk,
+            --clk      => clk,
             ex_brch   => ex_brch,
             ex_state => ex_state,
             pc_sctrl => pc_sctrl,

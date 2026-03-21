@@ -33,3 +33,14 @@ jmp end					;pc = 16
 end:
 nop						;pc = 17 //delay required :C
 jmp start				;pc = 18
+
+
+; Expected PC per cycle (sequential execution, no pipeline effects)
+; 0 1 2 3 4
+; 5 6 7 5 6 7 5 6 7 5 6 7 5 6 7 5 6 7 5 6 7 5 8
+; 8 9 5 8 9 10
+; 11 12 13 11 12 13 11 12 13 11 12 13 11 12 13
+; 11 12 13 11 12 13 11 12 13 11 12 13 11 12 13
+; 11 12 13 11 12 13 11 12 13 11 12 13 11 14
+; 14 15 11 14 15 16
+; 16 17 18 0

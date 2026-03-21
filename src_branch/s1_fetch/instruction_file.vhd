@@ -4,11 +4,14 @@ use ieee.numeric_std.all;
 use work.numeric_var.all;
 
 entity instruction_file is 
-	port(				  
-	  if_pc			: in std_logic_vector(COUNTER_LENGTH-1 downto 0);	
-	  in_file		: in std_logic_vector(FILE_SIZE-1 downto 0); 
-	  reset_bar		: in std_logic;
-	  if_instruc	: out std_logic_vector(INSTRUCTION_LENGTH-1 downto 0)
+	port(			
+	--inputs(data)
+	if_pc		: in std_logic_vector(COUNTER_LENGTH-1 downto 0);	
+	reset_bar	: in std_logic;	  
+	in_file		: in std_logic_vector(FILE_SIZE-1 downto 0); 
+	  	  
+	--outputs(data)
+	if_instruc	: out std_logic_vector(INSTRUCTION_LENGTH-1 downto 0)
 	);
 end entity;
 
@@ -27,7 +30,6 @@ begin
 			msb := (pc_index * INSTRUCTION_LENGTH + INSTRUCTION_LENGTH) -1;
 			lsb := msb - INSTRUCTION_LENGTH + 1;
 			if_instruc <= INSTRUC_FILE(msb downto lsb); 
-
 		end if;						 
 	end process;
 end architecture;

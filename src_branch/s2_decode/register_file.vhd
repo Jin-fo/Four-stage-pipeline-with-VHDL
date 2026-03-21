@@ -4,22 +4,26 @@ use ieee.numeric_std.all;
 use work.numeric_var.all;
 
 entity register_file is
-	port(		   
+	port(	
+	--inputs(data)
 	read_sel	: in std_logic_vector(2 downto 0);
 	
 	id_rs3_ptr	: in std_logic_vector(ADDRESS_LENGTH-1 downto 0);
 	id_rs2_ptr	: in std_logic_vector(ADDRESS_LENGTH-1 downto 0);
 	id_rs1_ptr  : in std_logic_vector(ADDRESS_LENGTH-1 downto 0);
 	
+	--forward(data) 
 	wb_rd		: in std_logic_vector(REGISTER_LENGTH-1 downto 0);
 	wb_rd_ptr	: in std_logic_vector(ADDRESS_LENGTH-1 downto 0);  --for forwarding address comparision
 	wb_wback	: in std_logic;	
 	
-	out_file	: out std_logic_vector(REGISTER_SIZE-1 downto 0);
-	
+	--outputs(data)
 	id_rs3		: out std_logic_vector(REGISTER_LENGTH-1 downto 0);
 	id_rs2		: out std_logic_vector(REGISTER_LENGTH-1 downto 0);
-	id_rs1		: out std_logic_vector(REGISTER_LENGTH-1 downto 0)	 
+	id_rs1		: out std_logic_vector(REGISTER_LENGTH-1 downto 0);	
+	
+	--outputs(debug)
+	out_file	: out std_logic_vector(REGISTER_SIZE-1 downto 0)
 	);
 end entity;
 
@@ -27,7 +31,7 @@ architecture behavior of register_file is
 	signal REG_FILE	: std_logic_vector(REGISTER_SIZE-1 downto 0) := (others => '0');
 begin		
 		
-	register_file : process(read_sel, id_rs3_ptr, id_rs2_ptr, id_rs1_ptr, wb_wback)		
+	register_file : process(read_sel, id_rs3_ptr, id_rs2_ptr, id_rs1_ptr, wb_wback, wb_rd)		
 		variable var_rs3 	: std_logic_vector(REGISTER_LENGTH-1 downto 0) := (others => '0');
 		variable var_rs2 	: std_logic_vector(REGISTER_LENGTH-1 downto 0) := (others => '0');
 		variable var_rs1 	: std_logic_vector(REGISTER_LENGTH-1 downto 0) := (others => '0');
@@ -55,7 +59,7 @@ begin
 		end if;		  
 		
         -------------------------------------------------------------------
-        -- FORWARDING
+        -- FORWARDING	 seperate process and clocked
         -------------------------------------------------------------------
         if wb_wback = '1' then
             if wb_rd_ptr = id_rs3_ptr then
