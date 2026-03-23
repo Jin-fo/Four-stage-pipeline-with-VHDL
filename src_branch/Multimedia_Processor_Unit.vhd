@@ -233,29 +233,38 @@ begin
 	-- =========================
 	-- PC REGISTER
 	-- =========================
-	PC_REG : entity work.pc_reg(behavior)
-	    port map (
+	PC : entity work.pc(behavior)
+	    port map (			 
+			--setup
 	        clk        => clk,
 	        enable     => enable,
-	        reset_bar  => reset_bar,
-	        next_pc    => pc_next,
-	        pc_out     => pc_current
+	        reset_bar  => reset_bar, 
+			
+			--inputs
+	        pc_next    => pc_next,	
+			
+			--outputs
+	        pc_current => pc_current
 	    );
 	
 	-- =========================
 	-- PC SELECT (COMBINATIONAL)
 	-- =========================
 	PC_SEL : entity work.pc_select(behavior)
-	    port map (
-	        pc_reg     => pc_current,
-	
+	    port map (	   
+			--inputs(default)
+	        pc_current     => pc_current, 
+			
+			--inputs(predict)
 	        pred_pc    => pred_pc,
-	        id_pctrl   => id_pctrl,
-	
+	        id_pctrl   => id_pctrl,	 
+			
+			--inputs(flush)
 	        brch_pc    => brch_pc,
 	        flush_ctrl => flush_ctrl,
-	
-	        next_pc    => pc_next,
+			
+			--outputs
+	        pc_next    => pc_next,
 	        if_pc      => if_pc
 	    );
 		

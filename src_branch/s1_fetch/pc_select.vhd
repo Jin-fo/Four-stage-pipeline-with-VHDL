@@ -5,17 +5,19 @@ use work.numeric_var.all;
 
 entity pc_select is
     port(
-        -- inputs
-        pc_reg     : in  std_logic_vector(COUNTER_LENGTH-1 downto 0);
-
+        --inputs(default)
+        pc_current     : in  std_logic_vector(COUNTER_LENGTH-1 downto 0);  
+		
+		--inputs(predict)
         pred_pc    : in  std_logic_vector(COUNTER_LENGTH-1 downto 0);
-        id_pctrl   : in  std_logic;
-
+        id_pctrl   : in  std_logic;	 
+		
+		--inputs(flush)
         brch_pc    : in  std_logic_vector(COUNTER_LENGTH-1 downto 0);
         flush_ctrl : in  std_logic;
 
-        -- outputs
-        next_pc    : out std_logic_vector(COUNTER_LENGTH-1 downto 0);
+        --outputs
+        pc_next    : out std_logic_vector(COUNTER_LENGTH-1 downto 0);
         if_pc      : out std_logic_vector(COUNTER_LENGTH-1 downto 0)
     );
 end entity;
@@ -23,7 +25,7 @@ end entity;
 architecture behavior of pc_select is
 begin
 
-	process(pc_reg, pred_pc, id_pctrl, brch_pc, flush_ctrl)
+	process(pc_current, pred_pc, id_pctrl, brch_pc, flush_ctrl)
     	variable var_next : unsigned(COUNTER_LENGTH-1 downto 0);
 	begin
 	    -- priority: flush > predict > sequential
@@ -36,11 +38,11 @@ begin
 	        if_pc    <= pred_pc;  
 		else 
 			-- default: sequential
-	    	var_next := unsigned(pc_reg) + INCREMENT;
-	    	if_pc    <= pc_reg;
+	    	var_next := unsigned(pc_current) + INCREMENT;
+	    	if_pc    <= pc_current;
 	    end if;
 	
-	    next_pc <= std_logic_vector(var_next);
+	    pc_next <= std_logic_vector(var_next);
 	
 	end process;
 
