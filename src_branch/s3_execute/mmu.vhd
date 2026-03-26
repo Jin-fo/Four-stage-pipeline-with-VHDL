@@ -93,7 +93,7 @@ begin
 					flush_ctrl <= '0';
 					pc_sctrl <= '0';
 				end if;
-			when others => 
+			when others => --nop don't cares
 		end case;
 	end process;
 end architecture;
