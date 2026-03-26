@@ -19,7 +19,7 @@ end entity;
 architecture behavior of predictor is  
 begin	
 	
-	predictor : process(id_target) 		 
+	predictor : process(id_target) 	//include all inpute in list	 
 		variable var_pctrl : std_logic;
 	begin
 		
