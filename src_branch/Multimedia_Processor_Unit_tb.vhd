@@ -36,7 +36,7 @@ architecture tb of Multimedia_Processor_Unit_tb is
     -- ======================
     -- Internal signals (unchanged)
     -- ======================
-    signal if_pc, pred_pc, iff_target, ifd_target :
+    signal if_pc, iff_target, ifd_target :
         std_logic_vector(COUNTER_LENGTH-1 downto 0);
 
     signal if_instruc : std_logic_vector(INSTRUCTION_LENGTH-1 downto 0);
@@ -73,7 +73,7 @@ architecture tb of Multimedia_Processor_Unit_tb is
 
     signal ex_rd_ptr, ex_rs3_ptr, ex_rs2_ptr, ex_rs1_ptr :
         std_logic_vector(ADDRESS_LENGTH-1 downto 0);
-
+	signal ex_target : std_logic_vector(COUNTER_LENGTH-1 downto 0);
     signal ex_state  : std_logic_vector(STATE_LENGTH-1 downto 0);
     signal ex_wback, ex_pctrl, ex_bctrl : std_logic;
 
@@ -85,7 +85,7 @@ architecture tb of Multimedia_Processor_Unit_tb is
     signal ex_rd    : std_logic_vector(REGISTER_LENGTH-1 downto 0);
     signal brch_pc  : std_logic_vector(COUNTER_LENGTH-1 downto 0);
 
-    signal pc_sctrl, flush_ctrl : std_logic;
+    signal ex_sctrl, flush_ctrl : std_logic;
 
     signal fsm_state : std_logic_vector(1 downto 0);
     signal fsm_sctrl : std_logic;
@@ -133,7 +133,6 @@ begin
             pc_next_i    => pc_next,
             if_pc_i => if_pc,
             if_instruc_i => if_instruc,
-            pred_pc_i => pred_pc,
             id_pctrl_i => id_pctrl,
             iff_target_i => iff_target,
             ifd_target_i => ifd_target,
@@ -169,7 +168,9 @@ begin
             ex_rd_ptr_i => ex_rd_ptr,
             ex_rs3_ptr_i => ex_rs3_ptr,
             ex_rs2_ptr_i => ex_rs2_ptr,
-            ex_rs1_ptr_i => ex_rs1_ptr,
+            ex_rs1_ptr_i => ex_rs1_ptr,	
+			
+			ex_target_i => ex_target,
             ex_state_i => ex_state,
             ex_wback_i => ex_wback,
             ex_pctrl_i => ex_pctrl,
@@ -182,7 +183,7 @@ begin
 
             ex_rd_i => ex_rd,
             brch_pc_i => brch_pc,
-            pc_sctrl_i => pc_sctrl,
+            ex_sctrl_i => ex_sctrl,
             flush_ctrl_i => flush_ctrl,
 
             fsm_state_i => fsm_state,
@@ -208,7 +209,7 @@ begin
     begin
         enable    <= '0';
         reset_bar <= '0';
-        wait for PERIOD;
+        wait for PERIOD/2;
 
         reset_bar <= '1';
         enable    <= '1';

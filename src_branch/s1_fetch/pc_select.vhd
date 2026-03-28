@@ -30,19 +30,17 @@ begin
 	begin
 	    -- priority: flush > predict > sequential
 	    if flush_ctrl = '1' then
-	        var_next := unsigned(brch_pc) + INCREMENT;
+	        pc_next  <= std_logic_vector(unsigned(brch_pc) + INCREMENT);
 	        if_pc    <= brch_pc;
 	
 	    elsif id_pctrl = '1' then
-	        var_next := unsigned(pred_pc) + INCREMENT;
+	        pc_next  <= std_logic_vector(unsigned(pred_pc) + INCREMENT);
 	        if_pc    <= pred_pc;  
 		else 
 			-- default: sequential
-	    	var_next := unsigned(pc_current) + INCREMENT;
+	    	pc_next  <= std_logic_vector(unsigned(pc_current) + INCREMENT);
 	    	if_pc    <= pc_current;
 	    end if;
-	
-	    pc_next <= std_logic_vector(var_next);
 	
 	end process;
 

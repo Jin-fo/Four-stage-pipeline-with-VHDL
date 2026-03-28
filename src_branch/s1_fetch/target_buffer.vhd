@@ -14,7 +14,8 @@ entity target_buffer is
 	id_pc           : in std_logic_vector(COUNTER_LENGTH-1 downto 0);
 	id_target       : in std_logic_vector(COUNTER_LENGTH-1 downto 0);
 	
-	--outputs(branch) 
+	--outputs(branch) 		 
+	iff_valid		: out std_logic;
 	iff_target      : out std_logic_vector(COUNTER_LENGTH-1 downto 0);
 	
 	--outputs(debug)
@@ -38,27 +39,25 @@ architecture behavior of target_buffer is
 	signal wb_j	: integer range 0 to 2**(COUNTER_LENGTH)-1;
 begin       
     
-	read : process(if_pc) is
+	read : process(if_pc, id_tctrl, id_pc, id_target) is
 	    variable i : integer range 0 to 2**(COUNTER_LENGTH)-1;   
-	    variable var_target : std_logic_vector(COUNTER_LENGTH-1 downto 0);
 	begin    
 	    
-	    -- Reads target buffer
-	    i := to_integer(unsigned(if_pc));
-	    if BTB(i).valid = '1' then 
-	        var_target := BTB(i).target;
-	    else 
-	        var_target := (others => '0');
-	    end if;    	  
-		-- forward target buffer
 		if if_pc = id_pc then
-			var_target := id_target;
-	    end if;	 
-	    
-	    iff_target <= var_target; 
+			iff_target <= id_target;
+	    else 	 
+		    -- Reads target buffer
+		    i := to_integer(unsigned(if_pc));
+		    if BTB(i).valid = '1' then 	 	   
+				
+		        iff_target <= BTB(i).target;
+		    else 
+		        iff_target <= (others => '0'); 
+			end if;
+	    end if;    	  
 	end process; 
 	
-	write : process(clk, id_tctrl, id_pc, id_target)	 
+	write : process(clk)	 
 		variable j : integer range 0 to 2**(COUNTER_LENGTH)-1;   
 	begin
 		-- Write/update target buffer

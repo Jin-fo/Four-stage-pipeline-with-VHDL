@@ -15,7 +15,7 @@ architecture tb of pc_tb is
     signal pred_pc    : std_logic_vector(COUNTER_LENGTH-1 downto 0) := (others => '0');
     signal id_pctrl : std_logic := '0';
 
-    signal brch_pc      : std_logic_vector(COUNTER_LENGTH-1 downto 0) := (others => '0');
+    signal ex_pc      : std_logic_vector(COUNTER_LENGTH-1 downto 0) := (others => '0');
     signal flush_ctrl : std_logic := '0';
 
     signal if_pc   : std_logic_vector(COUNTER_LENGTH-1 downto 0);
@@ -32,7 +32,7 @@ begin
             reset_bar  => reset_bar,
             pred_pc    => pred_pc,
             id_pctrl  => id_pctrl,
-            brch_pc      => brch_pc,
+            ex_pc      => ex_pc,
             flush_ctrl => flush_ctrl,
             if_pc   => if_pc
         );
@@ -101,13 +101,13 @@ begin
         ----------------------------------------------------------------
         -- FLUSH TEST (HAS PRIORITY OVER PREDICTION)
         ----------------------------------------------------------------
-        brch_pc      <= std_logic_vector(to_unsigned(20, COUNTER_LENGTH));
+        ex_pc      <= std_logic_vector(to_unsigned(20, COUNTER_LENGTH));
         flush_ctrl <= '1';
 
         wait until rising_edge(clk);
 
         assert unsigned(if_pc) = (20 + INCREMENT)
-            report "Flush failed: pc not set to brch_pc + INCREMENT"
+            report "Flush failed: pc not set to ex_pc + INCREMENT"
             severity error;
 
         flush_ctrl <= '0';

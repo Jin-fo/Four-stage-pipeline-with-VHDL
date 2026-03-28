@@ -23,7 +23,8 @@ entity id_ex is
 	id_rs2_ptr		: in std_logic_vector(ADDRESS_LENGTH-1 downto 0);
 	id_rs1_ptr		: in std_logic_vector(ADDRESS_LENGTH-1 downto 0); 
 	
-	--inputs(branch)
+	--inputs(branch)  
+	id_target			: in std_logic_vector(COUNTER_LENGTH-1 downto 0);
 	id_state		: in std_logic_vector(1 downto 0); 
 	id_wback		: in std_logic;	  
 	id_pctrl 		: in std_logic;
@@ -43,7 +44,8 @@ entity id_ex is
 	ex_rs2_ptr		: out std_logic_vector(ADDRESS_LENGTH-1 downto 0);
 	ex_rs1_ptr		: out std_logic_vector(ADDRESS_LENGTH-1 downto 0); 
 	
-	--outputs(branch)
+	--outputs(branch)  
+	ex_target		: out std_logic_vector(COUNTER_LENGTH-1 downto 0);
 	ex_state		: out std_logic_vector(1 downto 0);
 	ex_wback		: out std_logic;
 	ex_pctrl		: out std_logic;
@@ -60,7 +62,7 @@ begin
 			ex_opcode 	<= "110000";
 			ex_wback    <= '0';
 			ex_pctrl	<= '0';
-			ex_bctrl		<= '0';	 
+			ex_bctrl	<= '0';	 
 			
 		elsif rising_edge(clk) then
 			if enable = '1' then   
@@ -75,6 +77,7 @@ begin
 				ex_rs3_ptr 	<= id_rs3_ptr;
 				ex_rs2_ptr 	<= id_rs2_ptr;
 				ex_rs1_ptr	 <= id_rs1_ptr;	
+				ex_target	<= id_target;
 				ex_state   	<= id_state;
 				
 				ex_wback   	<= id_wback;

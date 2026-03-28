@@ -26,7 +26,7 @@ entity Multimedia_Processor_Unit is
     if_pc_i      : out std_logic_vector(COUNTER_LENGTH-1 downto 0);
     if_instruc_i : out std_logic_vector(INSTRUCTION_LENGTH-1 downto 0);
 
-    pred_pc_i    : out std_logic_vector(COUNTER_LENGTH-1 downto 0);
+    id_target_i    : out std_logic_vector(COUNTER_LENGTH-1 downto 0);
     id_pctrl_i   : out std_logic;
 
     iff_target_i : out std_logic_vector(COUNTER_LENGTH-1 downto 0);
@@ -58,7 +58,6 @@ entity Multimedia_Processor_Unit is
     -- ======================
     -- Branch Predictor (debug)
     -- ======================
-    id_target_i : out std_logic_vector(COUNTER_LENGTH-1 downto 0);
     id_tctrl_i  : out std_logic;
 
     id_state_i   : out std_logic_vector(STATE_LENGTH-1 downto 0);
@@ -86,7 +85,8 @@ entity Multimedia_Processor_Unit is
     ex_rs3_ptr_i : out std_logic_vector(ADDRESS_LENGTH-1 downto 0);
     ex_rs2_ptr_i : out std_logic_vector(ADDRESS_LENGTH-1 downto 0);
     ex_rs1_ptr_i : out std_logic_vector(ADDRESS_LENGTH-1 downto 0);
-
+   
+	ex_target_i  : out std_logic_vector(COUNTER_LENGTH-1 downto 0);
     ex_state_i   : out std_logic_vector(STATE_LENGTH-1 downto 0);
     ex_wback_i   : out std_logic;
     ex_pctrl_i   : out std_logic;
@@ -101,7 +101,7 @@ entity Multimedia_Processor_Unit is
 	fw_state_i	 : out std_logic_vector(1 downto 0);
     ex_rd_i      : out std_logic_vector(REGISTER_LENGTH-1 downto 0);
 	brch_pc_i 	 : out std_logic_vector(COUNTER_LENGTH-1 downto 0);
-    pc_sctrl_i   : out std_logic;
+    ex_sctrl_i   : out std_logic;
     flush_ctrl_i : out std_logic;
 
     -- ======================
@@ -133,7 +133,6 @@ architecture structural of Multimedia_Processor_Unit is
     signal if_pc        : std_logic_vector(COUNTER_LENGTH-1 downto 0);
     signal if_instruc  : std_logic_vector(INSTRUCTION_LENGTH-1 downto 0);
 
-    signal pred_pc     : std_logic_vector(COUNTER_LENGTH-1 downto 0);
     signal id_pctrl    : std_logic;
 
     signal iff_target  : std_logic_vector(COUNTER_LENGTH-1 downto 0);
@@ -194,7 +193,8 @@ architecture structural of Multimedia_Processor_Unit is
     signal ex_rs3_ptr : std_logic_vector(ADDRESS_LENGTH-1 downto 0);
     signal ex_rs2_ptr : std_logic_vector(ADDRESS_LENGTH-1 downto 0);
     signal ex_rs1_ptr : std_logic_vector(ADDRESS_LENGTH-1 downto 0);
-
+	
+	signal ex_target   : std_logic_vector(COUNTER_LENGTH-1 downto 0);
     signal ex_state   : std_logic_vector(STATE_LENGTH-1 downto 0);
     signal ex_wback   : std_logic;
     signal ex_pctrl   : std_logic;
@@ -210,7 +210,7 @@ architecture structural of Multimedia_Processor_Unit is
 	
     signal ex_rd      : std_logic_vector(REGISTER_LENGTH-1 downto 0);
 	signal brch_pc	  : std_logic_vector(COUNTER_LENGTH-1 downto 0);
-    signal pc_sctrl   : std_logic;
+    signal ex_sctrl   : std_logic;
     signal flush_ctrl : std_logic;
 
     -- ======================
@@ -256,7 +256,7 @@ begin
 	        pc_current     => pc_current, 
 			
 			--inputs(predict)
-	        pred_pc    => pred_pc,
+	        pred_pc    => id_target,
 	        id_pctrl   => id_pctrl,	 
 			
 			--inputs(flush)
@@ -336,7 +336,7 @@ begin
 		id_bctrl	=> id_bctrl,
 		id_jump		=> id_jump);
 	
-	T_CRRT : entity work.target_correct(behavior)
+	B_Target : entity work.target_correct(behavior)
 		port map ( 
 		--inputs(branch)
 		id_pc	 	=> id_pc,
@@ -350,7 +350,8 @@ begin
 		
 	S_BUFF : entity work.state_buffer(behavior)
 		port map (
-		--inputs(branch)
+		--inputs(branch)	
+		clk 		=> clk,
 		id_pc		=> id_pc,
 		id_bctrl	=> id_bctrl, 
 		
@@ -363,20 +364,19 @@ begin
 		id_state	=> id_state,
 		out_buffer	=> out_Sbuffer);
 		
-	B_PRED: entity work.predictor(behavior)
+	B_PRED: entity work.branch_predictor(behavior)
 		port map (	   
 		--inputs(branch) 
-		id_target	=> id_target,
 		id_state	=> id_state,
 		id_jump		=> id_jump,
 		
 		--outputs(branch)
-		pred_pc		=> pred_pc,
 		id_pctrl    => id_pctrl);
 
 	R_File : entity work.register_file(behavior)
 		port map (
-		--inputs(data)	   
+		--inputs(data)	
+		clk 		=> clk,
 		read_sel 	=> read_sel,
 		
 		id_rs3_ptr 	=> id_rs3_ptr, 
@@ -418,6 +418,7 @@ begin
 		id_rs1_ptr	=> id_rs1_ptr, 
 		
 		--inputs(branch)
+		id_target	=> id_target,
 		id_state	=> id_state,
 		id_wback	=> id_wback,
 		id_pctrl	=> id_pctrl,
@@ -437,7 +438,8 @@ begin
 		ex_rs2_ptr	=> ex_rs2_ptr,
 		ex_rs1_ptr	=> ex_rs1_ptr,
 		
-		--outputs(branch)
+		--outputs(branch)		
+		ex_target	=> ex_target,
 		ex_state	=> ex_state,
 		ex_wback	=> ex_wback,
 		ex_pctrl	=> ex_pctrl,
@@ -486,25 +488,34 @@ begin
 		ex_immed	=> ex_immed,
 		
 		--inputs(branch)	  
-		ex_pc		=> ex_pc,
-		ex_pctrl	=> ex_pctrl,
 		ex_bctrl	=> ex_bctrl,
 		
 		--outputs(data)
 		ex_rd		=> ex_rd,
 		
 		--outputs(branch)	
-		pc_sctrl	=> pc_sctrl,
-		flush_ctrl 	=> flush_ctrl,
-		brch_pc		=> brch_pc);
+		ex_sctrl	=> ex_sctrl);	 
 		
-	S_FSM : entity work.state_fsm(behavior)
+	CTRL_FLUSH : entity work.flush_control(behavior)
+    	port map (
+        --inputs(branch)   
+		ex_bctrl   => ex_bctrl, 
+        ex_pctrl   => ex_pctrl,     -- predicted branch control
+        ex_sctrl   => ex_sctrl,     -- actual resolved branch control
+        ex_pc      => ex_pc,        -- current PC in EX stage
+        ex_target   => ex_target,     -- immediate for branch
+
+        -- outputs(branch)
+        brch_pc    => brch_pc,      -- branch target PC
+        flush_ctrl => flush_ctrl   -- pipeline flush signal
+    );
+		
+	S_FSM : entity work.state_lookup(behavior)
 		port map (
 		--inputs   
-		clk			=> clk,
 		ex_bctrl	=> ex_bctrl,
 		fw_state  	=> fw_state,
-		pc_sctrl	=> pc_sctrl,  
+		ex_sctrl	=> ex_sctrl,  
 		
 		--outputs
 		fsm_state   => fsm_state,
@@ -546,7 +557,7 @@ begin
 	if_pc_i       	<= if_pc;
 	if_instruc_i	<= if_instruc;
 	
-	pred_pc_i     <= pred_pc;
+	id_target_i     <= id_target;
 	id_pctrl_i    <= id_pctrl;
 	
 	iff_target_i  <= iff_target;
@@ -592,6 +603,7 @@ begin
 	ex_rs2_ptr_i <= ex_rs2_ptr;
 	ex_rs1_ptr_i <= ex_rs1_ptr;
 	
+	ex_target_i	<= ex_target;
 	ex_state_i  <= ex_state;
 	ex_wback_i  <= ex_wback;
 	ex_pctrl_i  <= ex_pctrl;
@@ -604,7 +616,7 @@ begin
 	
 	ex_rd_i     <= ex_rd;
 	brch_pc_i	<= brch_pc;
-	pc_sctrl_i  <= pc_sctrl;
+	ex_sctrl_i  <= ex_sctrl;
 	flush_ctrl_i<= flush_ctrl;
 	
 	fsm_state_i <= fsm_state;

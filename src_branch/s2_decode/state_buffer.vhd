@@ -6,6 +6,7 @@ use work.numeric_var.all;
 entity state_buffer is 
     port(
 	--inputs(branch)
+	clk			: in  std_logic;
     id_pc       : in  std_logic_vector(COUNTER_LENGTH-1 downto 0);
     id_bctrl    : in  std_logic; 
     
@@ -40,21 +41,19 @@ begin
 	begin
 	
 	    if (id_bctrl = '1') then
-	
-	        -- Read State
-	        i := to_integer(unsigned(id_pc));
-	        if TSB(i).valid = '1' then
-	            var_state := TSB(i).state;
-			else 
-				var_state := "10";
-	        end if;			
+		   	-- Forward State
+			if wb_sctrl = '1' and wb_pc = id_pc then 
+				var_state := wb_state;
+			else 	
+		        -- Read State
+		        i := to_integer(unsigned(id_pc));
+		        if TSB(i).valid = '1' then
+		            var_state := TSB(i).state;
+				else 
+					var_state := "10";
+		        end if;			
 			
-			-- Forward State
-			if wb_sctrl = '1' then 
-				if wb_pc = id_pc then 
-					var_state := wb_state;
-				end if;
-			end if;
+		    end if;
 		else 	
 			var_state := "01";
 	    end if;	
@@ -64,20 +63,23 @@ begin
 	end process;		
 	
 	--make it clk
-	state_write : process(wb_sctrl, wb_state, wb_pc)
+	state_write : process(clk)
 	    variable j : integer range 0 to 2**(COUNTER_LENGTH)-1;
-	begin
-	    j := to_integer(unsigned(wb_pc));
-	    if wb_sctrl = '1' then
-	        TSB(j).valid <= '1';
-	        TSB(j).state <= wb_state;
-	    end if;					   
-			
+	begin	 
+		if falling_edge(clk) then
+	    	j := to_integer(unsigned(wb_pc));
+		    if wb_sctrl = '1' then
+		        TSB(j).valid <= '1';
+		        TSB(j).state <= wb_state;
+		    end if;					   
+		end if;	
 	end process;
 
-	debug : process(id_pc, TSB, wb_sctrl) is
+	debug : process(TSB, wb_sctrl) is
 	    variable bit_index : integer := 0;
-	begin
+	begin	   
+		out_buffer <= (others => '0');
+		
 	    if wb_sctrl = '1' then
 	        bit_index := 0;
 	        for i in 0 to (2**(COUNTER_LENGTH)-1) loop

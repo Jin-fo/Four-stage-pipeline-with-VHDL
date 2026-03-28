@@ -17,10 +17,10 @@ package rest_instruction is
 	
 	procedure BRH_main(
 		signal opcode	: in std_logic_vector(OPCODE_LENGTH-1 downto 0);
-		signal in_rs2			: in std_logic_vector(REGISTER_LENGTH-1 downto 0);
-		signal in_rs1			: in std_logic_vector(REGISTER_LENGTH-1 downto 0);
+		in_rs2			: in std_logic_vector(REGISTER_LENGTH-1 downto 0);
+		in_rs1			: in std_logic_vector(REGISTER_LENGTH-1 downto 0);
 		
-		out_ctrl 		: out std_logic 
+		signal out_ctrl 		: out std_logic 
 	);
 end package; 
 
@@ -183,9 +183,9 @@ package body rest_instruction is
 		
 	procedure BRH_main(
 	    signal opcode : in std_logic_vector(OPCODE_LENGTH-1 downto 0);
-	    signal in_rs2        : in std_logic_vector(REGISTER_LENGTH-1 downto 0);
-	    signal in_rs1        : in std_logic_vector(REGISTER_LENGTH-1 downto 0);
-	    out_ctrl      : out std_logic
+	    in_rs2        : in std_logic_vector(REGISTER_LENGTH-1 downto 0);
+	    in_rs1        : in std_logic_vector(REGISTER_LENGTH-1 downto 0);
+	    signal out_ctrl      : out std_logic
 	) is
 	    variable true_flag : std_logic := '0';
 	begin
@@ -216,6 +216,6 @@ package body rest_instruction is
 		        true_flag := '1';
 		end case;
 		
-		out_ctrl := true_flag;
+		out_ctrl <= true_flag;
 	end procedure;
 end package body rest_instruction;

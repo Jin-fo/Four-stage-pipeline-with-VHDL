@@ -22,18 +22,18 @@ architecture behavior of pc is
     signal pc_reg : unsigned(COUNTER_LENGTH-1 downto 0);
 begin
 
-process(clk, reset_bar)
-begin
-    if reset_bar = '0' then
-        pc_reg <= (others => '0');
-
-    elsif rising_edge(clk) then
-        if enable = '1' then
-            pc_reg <= unsigned(pc_next);
-        end if;
-    end if;
-end process;
-
-pc_current <= std_logic_vector(pc_reg);
+	process(clk, reset_bar)
+	begin
+	    if reset_bar = '0' then
+	        pc_reg <= (others => '0');
+	
+	    elsif rising_edge(clk) then
+	        if enable = '1' then
+	            pc_reg <= unsigned(pc_next);
+	        end if;
+	    end if;
+	end process;
+	
+	pc_current <= std_logic_vector(pc_reg);
 
 end architecture;

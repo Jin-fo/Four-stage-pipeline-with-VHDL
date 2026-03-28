@@ -32,7 +32,7 @@ begin
 	begin 	   				  
 		if (flush_ctrl = '1') then
 			id_instruc  <= NOP_INSTRUCTION;	
-			id_pc	<= (others => '-');
+			id_pc	<= (others => '0');
 		end if;
 		
 		if (reset_bar = '0') then
