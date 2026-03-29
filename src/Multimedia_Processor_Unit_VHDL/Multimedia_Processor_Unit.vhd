@@ -9,10 +9,10 @@ entity Multimedia_Processor_Unit is
 	clk 		: in std_logic;	  
 	enable		: in std_logic;
 	reset_bar 	: in std_logic;
-	in_file 	: in std_logic_vector(FILE_SIZE-1 downto 0);   
+	in_file 	: in std_logic_vector(INSTRUCTION_SIZE-1 downto 0);   
 	
 	--unit output
-	out_file_tb	: out std_logic_vector(REGISTER_SIZE-1 downto 0);  
+	out_file	: out std_logic_vector(REGISTER_SIZE-1 downto 0);  
 	
 	--test beanch signals
     pc_count_tb    : out std_logic_vector(COUNTER_LENGTH-1 downto 0);
@@ -55,7 +55,6 @@ entity Multimedia_Processor_Unit is
 end Multimedia_Processor_Unit;
 
 architecture structural of Multimedia_Processor_Unit is	 
-	signal out_file		: std_logic_vector(REGISTER_SIZE-1 downto 0);
 	signal pc_count 	: std_logic_vector(COUNTER_LENGTH-1 downto 0);
 	signal if_instruc 	: std_logic_vector(INSTRUCTION_LENGTH-1 downto 0);
 	signal id_instruc 	: std_logic_vector(INSTRUCTION_LENGTH-1 downto 0);	
@@ -105,6 +104,7 @@ begin
 	I_File : entity work.instruction_file(behavior)		
 		port map (	  
 		--input
+		clk         => clk,
 		pc_count 	=> pc_count,
 		in_file		=> in_file,	
 		reload_bar	=> reset_bar,
@@ -124,8 +124,8 @@ begin
 		
 	R_File : entity work.register_file(behavior)
 		port map (
-		--input	  
-		clk 		=> clk,
+		--input
+		clk         => clk,	  
 		instruc 	=> id_instruc, 
 		
 		--write back 
@@ -224,7 +224,6 @@ begin
 		wback		=> wb_wback);		
 		
 	--exposed signal for test-beanch	  
-	out_file_tb <= out_file;
 	pc_count_tb    <= pc_count;
 	if_instruc_tb  <= if_instruc;
 	id_instruc_tb  <= id_instruc;

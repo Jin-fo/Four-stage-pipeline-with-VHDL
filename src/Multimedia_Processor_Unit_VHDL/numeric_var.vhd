@@ -11,7 +11,7 @@ package numeric_var is
 	
 --------INSTRUCTION_FILE_CONSTANT-------------------------------------------------	
 	constant INSTRUCTION_LENGTH			: integer := 25;
-	constant FILE_SIZE					: integer := INSTRUCTION_LENGTH * 64; --buffer size of 64, ie 64 instruction 	
+	constant INSTRUCTION_SIZE			: integer := INSTRUCTION_LENGTH * 64; --buffer size of 64, ie 64 instruction 	
 	
 	constant IMMEDIATE_LENGTH			: integer := 16;
 	constant INDEX_LENGTH				: integer := 3;
