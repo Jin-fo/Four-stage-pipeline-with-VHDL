@@ -73,7 +73,7 @@ begin
             reset_bar => reset_bar,
             in_file   => in_file, 
 			
-            out_file_tb => out_file,
+            out_file => out_file,
 			
             pc_count_tb   => pc_count,
             if_instruc_tb => if_instruc,
