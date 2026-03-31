@@ -28,7 +28,7 @@ package body load_immediate is
 		variable temp_out 	: std_logic_vector(REGISTER_LENGTH-1 downto 0);		  
 	begin			   
 		temp_out := in_rs3;
-		low_bit := to_integer(unsigned(opcode(2 downto 0))) * VALUE16;
+		low_bit := to_integer(unsigned(opcode(2 downto 0))) * VALUE16; --try shifting
 		high_bit := low_bit + VALUE16;
 		temp_out(high_bit-1 downto low_bit) := in_immed;
 		
