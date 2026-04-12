@@ -1,0 +1,84 @@
+TOP LEVEL FSM CONTROL SPECIFICATION
+
+OVERVIEW
+The system is controlled by a top-level finite state machine (FSM) using two primary inputs:
+- rst_bar (active-low reset)
+- enable (system enable)
+
+The FSM coordinates system reset, USART-based instruction loading, and CPU execution from BRAM.
+
+STATE DEFINITIONS
+
+STATE 1: RESET / IDLE STATE
+Condition: rst_bar = 0 (enable = X)
+
+Description:
+- System is in reset mode.
+- CPU, USART, and accumulator are fully reset.
+- Program counter is cleared.
+- BRAM write enable is disabled.
+- Accumulator address counter is reset to zero.
+- System remains in this state until rst_bar = 1.
+
+STATE 2: USART RECEIVE / LOAD STATE
+Condition: rst_bar = 1 AND enable = 0
+
+Description:
+- System enters instruction loading mode.
+- USART operates in 8N1 serial mode (8-bit, no parity, 1 stop bit).
+- Incoming serial data is received byte-by-byte.
+- Data is accumulated into 25-bit instruction words.
+- Each completed instruction is written into CPU BRAM.
+- BRAM write enable is asserted during this state.
+- Address counter increments per instruction write.
+
+Transition condition:
+- Remains in this state until enable = 1 AND load_done = 1.
+
+STATE 3: EXECUTION STATE
+Condition: rst_bar = 1 AND enable = 1 AND load_done = 1
+
+Description:
+- Instruction loading is complete.
+- Accumulator has reached maximum instruction count (max_count = 64 instructions).
+- CPU begins execution from preloaded BRAM.
+- Program counter is enabled.
+- BRAM switches to read/execute mode.
+- USART and accumulator become inactive or idle.
+
+STATE TRANSITION RULES
+
+1. RESET STATE
+- Entered when rst_bar = 0
+
+2. LOAD STATE
+- Entered when rst_bar = 1 AND enable = 0
+
+3. EXECUTION STATE
+- Entered when rst_bar = 1 AND enable = 1 AND load_done = 1
+
+4. ASYNCHRONOUS RESET OVERRIDE
+- At any time, if rst_bar = 0, system returns to RESET STATE
+
+OUTPUT CONTROL BEHAVIOR
+
+RESET STATE:
+- cpu_reset = 1
+- usart_enable = 0
+- bram_wr_enable = 0
+- pc_enable = 0
+- accumulator_reset = 1
+
+LOAD STATE:
+- cpu_reset = 0
+- usart_enable = 1
+- bram_wr_enable = 1
+- pc_enable = 0
+- accumulator_reset = 0
+
+EXECUTION STATE:
+- cpu_reset = 0
+- usart_enable = 0
+- bram_wr_enable = 0
+- pc_enable = 1
+- accumulator_reset = 0
