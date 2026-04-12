@@ -1,0 +1,42 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+package numeric_var is 
+--------BRAM
+
+--------PROGRAM_COUNTER_CONSTANT-------------------------------------------------
+	constant COUNTER_LENGTH 			: integer := 6;
+	constant INCREMENT					: integer := 1;	 
+	
+	constant MAX_COUNT					: integer := 64;
+	
+--------INSTRUCTION_FILE_CONSTANT-------------------------------------------------	
+	constant INSTRUCTION_LENGTH			: integer := 25;
+	constant INSTRUCTION_HEIGHT          : integer := 64;
+	constant INSTRUCTION_SIZE			: integer := INSTRUCTION_LENGTH * INSTRUCTION_HEIGHT; --buffer size of 64, ie 64 instruction 
+		
+	
+	constant IMMEDIATE_LENGTH			: integer := 16;
+	constant INDEX_LENGTH				: integer := 3;
+	constant OPCODE_LENGTH				: integer := 6;	
+	
+	constant NOP_INSTRUCTION			: std_logic_vector(INSTRUCTION_LENGTH-1 downto 0) := b"1100000000000000000000000";
+	
+	
+--------REGISTER_FILE_CONSTANT-------------------------------------------------	  
+	constant REGISTER_LENGTH			: integer := 128;  
+	constant REGISTER_HEIGHT            : integer := 32;
+	constant REGISTER_SIZE				: integer := REGISTER_LENGTH * REGISTER_HEIGHT; --buffer size of 32, ie 32 address
+
+	constant VALUE16					: integer := 16;
+	constant ADDRESS_LENGTH				: integer := 5;		 
+	
+-------BRAM
+    type mem_array is array (0 to INSTRUCTION_HEIGHT - 1)
+        of std_logic_vector(INSTRUCTION_LENGTH-1 downto 0);
+
+--------DEBUG_CONSTANT-------------------------------------------------	  
+	constant PERIOD					: time := 10ns;
+
+end package;
