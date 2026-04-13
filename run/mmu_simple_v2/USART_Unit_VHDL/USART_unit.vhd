@@ -4,18 +4,18 @@ use ieee.numeric_std.all;
 
 entity USART_unit is
     port (
-        clk        : in  std_logic;
-        reset_bar  : in  std_logic;
+        clk         : in  std_logic;
+        rst_bar     : in  std_logic;
 
         -- control
-        enable     : in  std_logic;
+        en_bar      : in  std_logic;
 
         -- serial input
-        rx         : in  std_logic;
+        rx          : in  std_logic;
 
         -- parallel output to accumulator
-        rx_data    : out std_logic_vector(7 downto 0);
-        rx_ready   : out std_logic
+        rx_data     : out std_logic_vector(7 downto 0);
+        rx_ready    : out std_logic
     );
 end entity;
 
@@ -31,21 +31,21 @@ begin
     --------------------------------------------------------------------
     -- 1. BAUD GENERATOR
     --------------------------------------------------------------------
-    baud_inst : entity work.baud_gen(behavior)
+    BAUD_GEN : entity work.baud_gen(behavior)
     port map (
         clk        => clk,
-        reset_bar  => reset_bar,
-        enable_bar     => enable,
+        reset_bar  => rst_bar,
+        enable_bar => en_bar,
         baud_tick  => baud_tick
     );
 
     --------------------------------------------------------------------
     -- 2. UART RECEIVER (8N1)
     --------------------------------------------------------------------
-    rx_inst : entity work.data_rx(behavior)
+    DATA_RX : entity work.data_rx(behavior)
     port map (
         clk        => clk,
-        reset_bar  => reset_bar,
+        reset_bar  => rst_bar,
         baud_tick  => baud_tick,
 
         rx         => rx,

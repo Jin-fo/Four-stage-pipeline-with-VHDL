@@ -4,7 +4,7 @@ use ieee.numeric_std.all;
 
 entity baud_gen is
     generic (
-        CLK_FREQ  : integer := 100_000_000;
+        CLK_FREQ  : integer := 100000000;
         BAUD_RATE : integer := 115200
     );
     port (
@@ -16,7 +16,7 @@ entity baud_gen is
 end entity;
 
 architecture behavior of baud_gen is
-    constant BAUD_DIV : integer := CLK_FREQ / BAUD_RATE;
+    constant BAUD_DIV : integer := CLK_FREQ /(16* BAUD_RATE);
     signal cnt : integer range 0 to BAUD_DIV := 0;
 begin
     process(clk)
