@@ -10,12 +10,12 @@ entity control_fsm is
         enable     : in  std_logic;
 
         load_done  : in  std_logic;
+        
+        rst_busy   : in std_logic;
 
         -- control outputs
-        cpu_reset  : out std_logic;
         uart_en    : out std_logic;
-        cpu_en     : out std_logic;
-        wr_enable  : out std_logic
+        cpu_en     : out std_logic
     );
 end entity;
 
@@ -43,7 +43,7 @@ begin
     --------------------------------------------------------------------
     -- NEXT STATE LOGIC
     --------------------------------------------------------------------
-    process(state, rst_bar, enable, load_done)
+    process(state, rst_bar, enable, load_done, rst_busy)
     begin
 
         next_state <= state;
@@ -52,7 +52,9 @@ begin
 
             ------------------------------------------------------------
             when RESET =>
-                if rst_bar = '1' then
+                if rst_busy = '1' then
+                    next_state <= RESET;
+                elsif rst_bar = '1' then
                     next_state <= LOAD;
                 end if;
 
@@ -78,33 +80,25 @@ begin
     begin
 
         -- defaults
-        cpu_reset <= '1';
         uart_en   <= '0';
         cpu_en    <= '0';
-        wr_enable <= '0';
 
         case state is
 
             ------------------------------------------------------------
             when RESET =>
-                cpu_reset <= '1';
                 uart_en   <= '0';
                 cpu_en    <= '0';
-                wr_enable <= '0';
 
             ------------------------------------------------------------
             when LOAD =>
-                cpu_reset <= '1';   -- CPU held in reset
                 uart_en   <= '1';   -- UART active
                 cpu_en    <= '0';
-                wr_enable <= '1';   -- allow BRAM writes
 
             ------------------------------------------------------------
             when EXECUTE =>
-                cpu_reset <= '0';   -- release CPU
                 uart_en   <= '0';   -- disable UART loading
                 cpu_en    <= '1';   -- CPU runs
-                wr_enable <= '0';   -- prevent overwriting program
 
         end case;
     end process;

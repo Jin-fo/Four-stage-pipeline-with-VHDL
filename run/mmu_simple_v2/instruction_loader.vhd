@@ -6,7 +6,7 @@ use work.numeric_var.all;
 entity instruction_loader is
     port (
         clk        : in  std_logic;
-        reset_bar  : in  std_logic;
+        rst_bar  : in  std_logic;
 
         -- UART input
         rx_data    : in  std_logic_vector(7 downto 0);
@@ -41,7 +41,7 @@ begin
             ----------------------------------------------------------------
             -- RESET
             ----------------------------------------------------------------
-            if reset_bar = '0' then
+            if rst_bar = '0' then
                 shift_reg  <= (others => '0');
                 byte_count <= 0;
                 addr_reg   <= (others => '0');
@@ -67,7 +67,7 @@ begin
                         ----------------------------------------------------------------
                         -- WRITE TO BRAM
                         ----------------------------------------------------------------
-                        bram_data <= shift_reg(23 downto 0) & rx_data;
+                        bram_data <= shift_reg(16 downto 0) & rx_data;
                         bram_addr <= std_logic_vector(addr_reg);
                         we_reg    <= '1';
 

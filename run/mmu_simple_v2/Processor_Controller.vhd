@@ -16,9 +16,7 @@ entity Processor_Controller is
         -- debug
         reg_pos    : in  std_logic_vector(7 downto 0);
         reg_tog    : in  std_logic;
-        reg_value  : out std_logic_vector(15 downto 0);
-
-        reset_busy : out std_logic
+        reg_value  : out std_logic_vector(15 downto 0)
     );
 end entity;
 
@@ -27,10 +25,10 @@ architecture structural of Processor_Controller is
     --------------------------------------------------------------------
     -- FSM CONTROL SIGNALS
     --------------------------------------------------------------------
-    signal cpu_reset  : std_logic;
     signal uart_en    : std_logic;
     signal cpu_en     : std_logic;
     signal load_done  : std_logic;
+    signal reset_busy : std_logic;
     
     --------------------------------------------------------------------
     -- USART OUTPUT SIGNALS
@@ -40,6 +38,7 @@ architecture structural of Processor_Controller is
     --------------------------------------------------------------------
     -- ACCUMULATOR → CPU BRAM INTERFACE
     --------------------------------------------------------------------
+    signal instr_addr : std_logic_vector(COUNTER_LENGTH-1 downto 0);
     signal instr_data : std_logic_vector(INSTRUCTION_LENGTH-1 downto 0);
     signal wr_enable  : std_logic;
 
@@ -54,8 +53,8 @@ begin
         rst_bar   => rst_bar,
         enable    => enable,
         load_done => load_done,
+        rst_busy => reset_busy,
 
-        cpu_reset => cpu_reset,
         uart_en   => uart_en,
         cpu_en    => cpu_en
     );
@@ -63,8 +62,8 @@ begin
     USART : entity work.USART_Unit(structural)
     port map ( 
         clk       => clk,
-        reset_bar   => rst_bar,
-        enable    => enable,
+        rst_bar   => rst_bar,
+        enable    => uart_en,
         
         rx  => rx,
 
@@ -79,13 +78,15 @@ begin
     INSTRUC_LDR : entity work.instruction_loader(behavior)
     port map (
         clk        => clk,
-        reset_bar  => cpu_reset,
+        rst_bar  => rst_bar,
 
         rx_data    => rx_data,
         rx_ready   => rx_ready,
-
-        data_out   => instr_data,
-        valid      => wr_enable
+        bram_addr  => instr_addr,
+        bram_data  => instr_data,
+        bram_we    => wr_enable,
+        
+        load_done  => load_done
     );
 
     --------------------------------------------------------------------
@@ -94,11 +95,12 @@ begin
     MMU_CPU : entity work.Multimedia_Processor_Unit(structural)
     port map (
         clk        => clk,
-        reset_bar  => cpu_reset,
+        reset_bar  => rst_bar,
         enable     => cpu_en,
 
         -- bootloader interface
-        in_instruc => instr_data,
+        in_instruct => instr_data,
+        addr_count => instr_addr,
         wr_enable  => wr_enable,
 
         -- runtime outputs
@@ -106,10 +108,7 @@ begin
         reg_tog    => reg_tog,
         reg_value  => reg_value,
 
-        reset_busy => reset_busy,
-
-        -- internal PC / execution (inside CPU)
-        load_done  => load_done
+        reset_busy => reset_busy
     );
 
 end architecture;
