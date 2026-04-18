@@ -1,6 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.numeric_var.all;
 
 entity data_rx is
     port (
@@ -22,7 +23,7 @@ architecture behavior of data_rx is
 
     signal shift   : std_logic_vector(7 downto 0);
     signal bit_cnt : integer range 0 to 7 := 0;
-    signal os_cnt  : integer range 0 to 15 := 0;
+    signal os_cnt  : integer range 0 to (SAMPLE_COUNT-1) := 0;
 
     signal ready : std_logic := '0';
 
@@ -57,7 +58,7 @@ begin
                 -- START: align to middle of start bit (8 ticks)
                 ----------------------------------------------------------------
                 when START =>
-                    if os_cnt = 7 then
+                    if os_cnt = (SAMPLE_COUNT/2)-1 then
                         os_cnt <= 0;
                         bit_cnt <= 0;
                         state <= DATA;
@@ -69,7 +70,7 @@ begin
                 -- DATA: sample every 16 ticks at center
                 ----------------------------------------------------------------
                 when DATA =>
-                    if os_cnt = 15 then
+                    if os_cnt = SAMPLE_COUNT-1 then
                         os_cnt <= 0;
                         shift(bit_cnt) <= rx;
 
@@ -86,7 +87,7 @@ begin
                 -- STOP: one bit time
                 ----------------------------------------------------------------
                 when STOP =>
-                    if os_cnt = 15 then
+                    if os_cnt = SAMPLE_COUNT-1 then
                         rx_data <= shift;
                         ready   <= '1';
                         state   <= IDLE;

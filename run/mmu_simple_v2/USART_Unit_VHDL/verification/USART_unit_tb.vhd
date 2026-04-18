@@ -28,7 +28,7 @@ architecture sim of USART_unit_tb is
     --------------------------------------------------------------------
     -- UART SEND PROCEDURE (MUST BE HERE)
     --------------------------------------------------------------------
-    procedure uart_send_byte(
+     procedure uart_send_byte(
         signal rx_line : out std_logic;
         data : std_logic_vector(7 downto 0)
     ) is

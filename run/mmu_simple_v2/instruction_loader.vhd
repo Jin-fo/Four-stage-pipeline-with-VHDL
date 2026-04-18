@@ -35,6 +35,7 @@ architecture behavior of instruction_loader is
 begin
 
     process(clk)
+        variable instruc_var : std_logic_vector(INSTRUCTION_LENGTH-1 downto 0);
     begin
         if rising_edge(clk) then
 
@@ -67,14 +68,15 @@ begin
                         ----------------------------------------------------------------
                         -- WRITE TO BRAM
                         ----------------------------------------------------------------
-                        bram_data <= shift_reg(16 downto 0) & rx_data;
+                        instruc_var := shift_reg(16 downto 0) & rx_data;
+                        bram_data <= instruc_var;
                         bram_addr <= std_logic_vector(addr_reg);
                         we_reg    <= '1';
 
                         ----------------------------------------------------------------
                         -- ADDRESS + DONE LOGIC
                         ----------------------------------------------------------------
-                        if addr_reg = to_unsigned(MAX_COUNT-1, COUNTER_LENGTH) then
+                        if addr_reg = to_unsigned(MAX_COUNT-1, COUNTER_LENGTH) or instruc_var = SPACE_INSTRUCTION then
                             done_reg <= '1';
                         else
                             addr_reg <= addr_reg + 1;
@@ -97,5 +99,6 @@ begin
     --------------------------------------------------------------------
     bram_we   <= we_reg;
     load_done <= done_reg;
+
 
 end architecture;

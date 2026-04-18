@@ -8,7 +8,7 @@ entity USART_unit is
         rst_bar     : in  std_logic;
 
         -- control
-        en_bar      : in  std_logic;
+        enable      : in  std_logic;
 
         -- serial input
         rx          : in  std_logic;
@@ -35,7 +35,7 @@ begin
     port map (
         clk        => clk,
         reset_bar  => rst_bar,
-        enable_bar => en_bar,
+        enable => enable,
         baud_tick  => baud_tick
     );
 

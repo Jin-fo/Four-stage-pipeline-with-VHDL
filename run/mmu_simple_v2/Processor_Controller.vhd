@@ -11,7 +11,11 @@ entity Processor_Controller is
 
         -- UART input
         rx         : in std_logic;
+        loaded     : out std_logic;
         
+        -- FSM CTRL 
+        uart        : out std_logic;
+        cpu         : out std_logic;
 
         -- debug
         reg_pos    : in  std_logic_vector(7 downto 0);
@@ -28,6 +32,11 @@ architecture structural of Processor_Controller is
     signal uart_en    : std_logic;
     signal cpu_en     : std_logic;
     signal load_done  : std_logic;
+    
+    signal uart_en_r    : std_logic;
+    signal cpu_en_r     : std_logic;
+    signal load_done_r  : std_logic;
+    
     signal reset_busy : std_logic;
     
     --------------------------------------------------------------------
@@ -41,8 +50,21 @@ architecture structural of Processor_Controller is
     signal instr_addr : std_logic_vector(COUNTER_LENGTH-1 downto 0);
     signal instr_data : std_logic_vector(INSTRUCTION_LENGTH-1 downto 0);
     signal wr_enable  : std_logic;
-
+    
 begin
+
+    ctrl_reg : process(clk)
+    begin
+        if rising_edge(clk) then
+            load_done_r <= load_done;
+            uart_en_r <= uart_en;
+            cpu_en_r  <= cpu_en;
+        end if;
+    end process;
+    
+    loaded <= load_done;
+    uart   <= uart_en;
+    cpu    <= cpu_en;
 
     --------------------------------------------------------------------
     -- 1. FSM CONTROLLER
@@ -52,7 +74,7 @@ begin
         clk       => clk,
         rst_bar   => rst_bar,
         enable    => enable,
-        load_done => load_done,
+        load_done => load_done_r,
         rst_busy => reset_busy,
 
         uart_en   => uart_en,
@@ -63,7 +85,7 @@ begin
     port map ( 
         clk       => clk,
         rst_bar   => rst_bar,
-        enable    => uart_en,
+        enable    => uart_en_r,
         
         rx  => rx,
 
@@ -96,7 +118,7 @@ begin
     port map (
         clk        => clk,
         reset_bar  => rst_bar,
-        enable     => cpu_en,
+        enable     => cpu_en_r,
 
         -- bootloader interface
         in_instruct => instr_data,
