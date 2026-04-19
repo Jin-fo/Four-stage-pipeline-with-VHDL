@@ -13,8 +13,8 @@ entity baud_gen is
 end entity;
 
 architecture behavior of baud_gen is
-    constant BAUD_DIV : integer := CLK_FREQ /(SAMPLE_COUNT * BAUD_RATE);
-    signal cnt : integer range 0 to BAUD_DIV := 0;
+    constant BAUD_DIV : integer := (CLK_FREQ / (SAMPLE_COUNT * BAUD_RATE));
+    signal cnt : integer range 0 to BAUD_DIV-1 := 0;
 begin
     process(clk)
     begin
@@ -30,6 +30,8 @@ begin
                     cnt <= cnt + 1;
                     baud_tick <= '0';
                 end if;
+            else
+                baud_tick <= '0';
             end if;
         end if;
     end process;

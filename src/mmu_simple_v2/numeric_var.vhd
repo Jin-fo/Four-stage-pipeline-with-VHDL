@@ -3,7 +3,10 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 package numeric_var is 
---------BRAM
+--------USART
+    constant CLK_FREQ                   : integer := 100000000;
+    constant BAUD_RATE                  : integer := 115200;
+    constant SAMPLE_COUNT               : integer := 8;
 
 --------PROGRAM_COUNTER_CONSTANT-------------------------------------------------
 	constant COUNTER_LENGTH 			: integer := 6;
@@ -22,7 +25,7 @@ package numeric_var is
 	constant OPCODE_LENGTH				: integer := 6;	
 	
 	constant NOP_INSTRUCTION			: std_logic_vector(INSTRUCTION_LENGTH-1 downto 0) := b"1100000000000000000000000";
-	
+	constant SPACE_INSTRUCTION          : std_logic_vector(INSTRUCTION_LENGTH-1 downto 0) := b"0000000000000000000000000";
 	
 --------REGISTER_FILE_CONSTANT-------------------------------------------------	  
 	constant REGISTER_LENGTH			: integer := 128;  
@@ -31,12 +34,8 @@ package numeric_var is
 
 	constant VALUE16					: integer := 16;
 	constant ADDRESS_LENGTH				: integer := 5;		 
-	
--------BRAM
-    type mem_array is array (0 to INSTRUCTION_HEIGHT - 1)
-        of std_logic_vector(INSTRUCTION_LENGTH-1 downto 0);
 
 --------DEBUG_CONSTANT-------------------------------------------------	  
 	constant PERIOD					: time := 10ns;
-
+	
 end package;

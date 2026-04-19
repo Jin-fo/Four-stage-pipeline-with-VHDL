@@ -28,6 +28,7 @@ architecture behavior of instruction_loader is
     signal byte_count : integer range 0 to 3 := 0;
 
     signal addr_reg   : unsigned(COUNTER_LENGTH-1 downto 0) := (others => '0');
+    signal instr_reg  : std_logic_vector(INSTRUCTION_LENGTH-1 downto 0) := (others => '0');
 
     signal we_reg     : std_logic := '0';
     signal done_reg   : std_logic := '0';
@@ -35,7 +36,6 @@ architecture behavior of instruction_loader is
 begin
 
     process(clk)
-        variable instruc_var : std_logic_vector(INSTRUCTION_LENGTH-1 downto 0);
     begin
         if rising_edge(clk) then
 
@@ -46,6 +46,7 @@ begin
                 shift_reg  <= (others => '0');
                 byte_count <= 0;
                 addr_reg   <= (others => '0');
+                instr_reg  <= (others => '0');
                 we_reg     <= '0';
                 done_reg   <= '0';
 
@@ -57,9 +58,9 @@ begin
                 we_reg <= '0';
 
                 ----------------------------------------------------------------
-                -- UART BYTE ACCUMULATION
+                -- UART BYTE ACCUMULATION (only if not done)
                 ----------------------------------------------------------------
-                if rx_ready = '1' then
+                if rx_ready = '1' and done_reg = '0' then
 
                     shift_reg <= shift_reg(23 downto 0) & rx_data;
 
@@ -68,15 +69,15 @@ begin
                         ----------------------------------------------------------------
                         -- WRITE TO BRAM
                         ----------------------------------------------------------------
-                        instruc_var := shift_reg(16 downto 0) & rx_data;
-                        bram_data <= instruc_var;
+                        instr_reg <= shift_reg(16 downto 0) & rx_data;
+                        bram_data <= shift_reg(16 downto 0) & rx_data;
                         bram_addr <= std_logic_vector(addr_reg);
                         we_reg    <= '1';
 
                         ----------------------------------------------------------------
                         -- ADDRESS + DONE LOGIC
                         ----------------------------------------------------------------
-                        if addr_reg = to_unsigned(MAX_COUNT-1, COUNTER_LENGTH) or instruc_var = SPACE_INSTRUCTION then
+                        if addr_reg = to_unsigned(MAX_COUNT-1, COUNTER_LENGTH) or (shift_reg(16 downto 0) & rx_data) = SPACE_INSTRUCTION then
                             done_reg <= '1';
                         else
                             addr_reg <= addr_reg + 1;

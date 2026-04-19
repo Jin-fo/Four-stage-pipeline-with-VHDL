@@ -31,11 +31,10 @@ architecture structural of Processor_Controller is
     --------------------------------------------------------------------
     signal uart_en    : std_logic;
     signal cpu_en     : std_logic;
+    signal uart_en_r  : std_logic;
+    signal cpu_en_r   : std_logic;
     signal load_done  : std_logic;
-    
-    signal uart_en_r    : std_logic;
-    signal cpu_en_r     : std_logic;
-    signal load_done_r  : std_logic;
+    signal load_done_r : std_logic;
     
     signal reset_busy : std_logic;
     
@@ -52,19 +51,27 @@ architecture structural of Processor_Controller is
     signal wr_enable  : std_logic;
     
 begin
-
-    ctrl_reg : process(clk)
+    
+    -- Register the control signals with one cycle delay
+    process(clk)
     begin
         if rising_edge(clk) then
-            load_done_r <= load_done;
-            uart_en_r <= uart_en;
-            cpu_en_r  <= cpu_en;
+            if rst_bar = '0' then
+                uart_en_r <= '0';
+                cpu_en_r  <= '0';
+                load_done_r <= '0';
+            else
+                uart_en_r <= uart_en;
+                cpu_en_r  <= cpu_en;
+                load_done_r <= load_done;
+            end if;
         end if;
     end process;
     
-    loaded <= load_done;
-    uart   <= uart_en;
-    cpu    <= cpu_en;
+    -- Output registered control signals
+    loaded <= load_done_r;
+    uart   <= uart_en_r;
+    cpu    <= cpu_en_r;
 
     --------------------------------------------------------------------
     -- 1. FSM CONTROLLER
@@ -74,18 +81,18 @@ begin
         clk       => clk,
         rst_bar   => rst_bar,
         enable    => enable,
-        load_done => load_done_r,
+        load_done => load_done,
         rst_busy => reset_busy,
 
         uart_en   => uart_en,
         cpu_en    => cpu_en
     );
     
-    USART : entity work.USART_Unit(structural)
+    USART : entity work.USART_unit(structural)
     port map ( 
         clk       => clk,
         rst_bar   => rst_bar,
-        enable    => uart_en_r,
+        enable    => uart_en,
         
         rx  => rx,
 
@@ -118,7 +125,7 @@ begin
     port map (
         clk        => clk,
         reset_bar  => rst_bar,
-        enable     => cpu_en_r,
+        enable     => cpu_en,
 
         -- bootloader interface
         in_instruct => instr_data,

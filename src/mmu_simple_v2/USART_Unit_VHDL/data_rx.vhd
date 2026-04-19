@@ -58,6 +58,7 @@ begin
                 -- START: align to middle of start bit (8 ticks)
                 ----------------------------------------------------------------
                 when START =>
+                    ready <= '0';
                     if os_cnt = (SAMPLE_COUNT/2)-1 then
                         os_cnt <= 0;
                         bit_cnt <= 0;
@@ -70,9 +71,21 @@ begin
                 -- DATA: sample every 16 ticks at center
                 ----------------------------------------------------------------
                 when DATA =>
+                    ready <= '0';
                     if os_cnt = SAMPLE_COUNT-1 then
                         os_cnt <= 0;
-                        shift(bit_cnt) <= rx;
+                        
+                        case bit_cnt is
+                            when 0 => shift(0) <= rx;
+                            when 1 => shift(1) <= rx;
+                            when 2 => shift(2) <= rx;
+                            when 3 => shift(3) <= rx;
+                            when 4 => shift(4) <= rx;
+                            when 5 => shift(5) <= rx;
+                            when 6 => shift(6) <= rx;
+                            when 7 => shift(7) <= rx;
+                            when others => null;
+                        end case;
 
                         if bit_cnt = 7 then
                             state <= STOP;
@@ -93,6 +106,7 @@ begin
                         state   <= IDLE;
                         os_cnt  <= 0;
                     else
+                        ready <= '0';
                         os_cnt <= os_cnt + 1;
                     end if;
 

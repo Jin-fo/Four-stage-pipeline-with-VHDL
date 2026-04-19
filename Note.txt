@@ -1,0 +1,35 @@
+Note
+------------------------------------------------------------------------------------------------
+| Hardware Synthesizable Practice:
+| --------------
+------------------------------------------------------------------------------------------------
+
+* Avoid dynamic indexing and variable bit slicing:
+	- hardware requires fixed wiring, and dynamic ranges force 
+	the synthesizer to guess mux structures, often leading 
+	to incorrect or reduced implementations.
+
+	temp_out(high_bit-1 downto low_bit) := data;
+
+* Explicity assign signals in all in all branches of if/case statements
+	- avoids infer latches, directly map to multiplexers with clearly
+	defined hardware paths
+
+* Avoid separate combination logic and sequential logic into different processes
+	- obscures intent, can lead to incorrect inference of registers
+	or combinational loops 
+
+* Avoid uintended arithmetic operation for control signals
+	- infer expensive hardware like multipliers instead of simple control logic.
+
+
+------------------------------------------------------------------------------------------------
+| Place and Route Files.rpt
+| --------------
+------------------------------------------------------------------------------------------------
+
+* Timing Report Validate Hardware
+
+* Utilization Report Validate Architecture
+	- Hardware Utilzation_place estimation of resource usage
+	- Hardware Utilization_route accurate resource usage
