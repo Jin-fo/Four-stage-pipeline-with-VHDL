@@ -33,3 +33,41 @@ Note
 * Utilization Report Validate Architecture
 	- Hardware Utilzation_place estimation of resource usage
 	- Hardware Utilization_route accurate resource usage
+
+The issue you are seeing is not a synthesis error but a structural
+consequence of how FPGA synthesis analyzes hardware. In your design, the
+USART_unit and instruction_loader disappear from the synthesized netlist
+because the tool performs constant propagation and dead logic
+elimination: once your FSM transitions from BOOT (UART loading phase) to
+RUN (CPU execution phase), the loader and UART path become logically
+inactive, and more importantly, their outputs no longer contribute to
+any observable final outputs of the system. Since synthesis is static
+(it does not model runtime phases), it concludes that after load_done
+becomes asserted, the loader and UART subsystem have no effect on the
+final hardware behavior, so they are considered redundant and removed
+entirely. This is especially likely because your loader is only active
+during initialization and then its results are fully consumed into BRAM,
+after which CPU takes over independently, meaning the loader chain does
+not remain part of the active combinational/sequential path. 
+
+The correct
+fix is not trying to “force synthesis to keep modules” but instead
+ensuring that the bootloader remains structurally observable in the
+final design. This is done by explicitly integrating it into the
+permanent hardware architecture using a BRAM arbitration multiplexer so
+that both CPU and loader are always part of the netlist, even if only
+one is active at a time, or by ensuring at least one output or
+debug/status signal from the loader remains connected to a top-level or
+CPU-visible signal so synthesis cannot legally prune it. 
+
+Alternatively,
+attributes like keep or dummy signal connections can force retention,
+but the most correct solution is architectural: use a clean BOOT/RUN FSM
+with a BRAM MUX where uart_en selects loader access and cpu_en selects
+CPU access, ensuring both subsystems remain part of the continuous
+datapath. In summary, the module is not incorrectly optimized away; it
+is being correctly removed because it becomes unreachable in the final
+static hardware graph, and the solution is to redesign the system so the
+bootloader path is always part of the observable hardware structure
+through controlled multiplexing or explicit signal usage.
+

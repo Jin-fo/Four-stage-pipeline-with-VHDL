@@ -10,11 +10,12 @@ entity Multimedia_Processor_Unit is
 	enable		: in std_logic;
 	reset_bar 	: in std_logic;
 	
-	-- Bootloader interface (UART → BRAM)
-	in_instruct : in std_logic_vector(INSTRUCTION_LENGTH-1 downto 0);
-	addr_count  : in std_logic_vector(COUNTER_LENGTH-1 downto 0);
-	wr_enable   : in std_logic;
+	-- Unified BRAM interface (muxed externally between loader and CPU)
+	bram_data   : in std_logic_vector(INSTRUCTION_LENGTH-1 downto 0);
+	bram_addr   : in std_logic_vector(COUNTER_LENGTH-1 downto 0);
+	bram_we     : in std_logic;
 	reset_busy  : out std_logic;
+	load_done   : out std_logic;
 	
 	reg_pos    : in std_logic_vector(7 downto 0); 
 	reg_tog    : in std_logic;
@@ -132,17 +133,23 @@ begin
 		pc_count 	=> pc_count
 		); 
 
-    I_FILE : entity work.instruction_file(behavior) -- instruction_file
-        port map (
-            clk         => clk,
-            reset_bar   => reset_bar,
-            pc_count    => pc_count,
-            addr_count  => addr_count,
-            in_instruc  => in_instruct,
-            wr_enable   => wr_enable,
-            out_instruc => if_instruc,
-            reset_busy  => reset_busy
-        );
+	-- Use unified BRAM interface for instruction_file
+	signal loader_load_done : std_logic;
+
+	I_FILE : entity work.instruction_file(behavior)
+		port map (
+			clk         => clk,
+			reset_bar   => reset_bar,
+			pc_count    => pc_count,
+			addr_count  => bram_addr,
+			in_instruc  => bram_data,
+			wr_enable   => bram_we,
+			out_instruc => if_instruc,
+			reset_busy  => reset_busy,
+			load_done   => loader_load_done
+		);
+
+	load_done <= loader_load_done;
 
     IF_ID : entity work.if_id(behavior)
         port map (	
