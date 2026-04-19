@@ -36,8 +36,6 @@ architecture structural of Processor_Controller is
     signal load_done  : std_logic;
     signal load_done_r : std_logic;
     
-    signal reset_busy : std_logic;
-    
     --------------------------------------------------------------------
     -- USART OUTPUT SIGNALS
     --------------------------------------------------------------------
@@ -50,7 +48,13 @@ architecture structural of Processor_Controller is
     signal instr_data : std_logic_vector(INSTRUCTION_LENGTH-1 downto 0);
     signal wr_enable  : std_logic;
     
+    signal reset_busy : std_logic;
+    signal fsm_enable : std_logic;
+    
 begin
+    
+    -- Gate FSM enable with reset_busy: only enable FSM when CPU reset is complete
+    fsm_enable <= enable and (not reset_busy);
     
     -- Register the control signals with one cycle delay
     process(clk)
@@ -80,9 +84,8 @@ begin
     port map (
         clk       => clk,
         rst_bar   => rst_bar,
-        enable    => enable,
+        enable    => fsm_enable,
         load_done => load_done,
-        rst_busy => reset_busy,
 
         uart_en   => uart_en,
         cpu_en    => cpu_en

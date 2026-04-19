@@ -10,8 +10,6 @@ entity control_fsm is
         enable     : in  std_logic;
 
         load_done  : in  std_logic;
-        
-        rst_busy   : in std_logic;
 
         -- control outputs
         uart_en    : out std_logic;
@@ -42,18 +40,14 @@ end process;
 --------------------------------------------------------------------
 -- next state
 --------------------------------------------------------------------
-process(state, enable, load_done, rst_busy)
+process(state, enable, load_done)
 begin
     next_state <= state;
 
     case state is
 
         when RESET =>
-            if rst_busy = '1' then
-                next_state <= RESET;
-            else
-                next_state <= LOAD;
-            end if;
+            next_state <= LOAD;
 
         when LOAD =>
             if enable = '1' and load_done = '1' then

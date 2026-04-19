@@ -2,7 +2,6 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.numeric_var.all;
-use work.all;
 
 entity Multimedia_Processor_Unit is	 
 	port (		 	  
@@ -10,6 +9,12 @@ entity Multimedia_Processor_Unit is
 	clk 		: in std_logic;	  
 	enable		: in std_logic;
 	reset_bar 	: in std_logic;
+	
+	-- Bootloader interface (UART → BRAM)
+	in_instruct : in std_logic_vector(INSTRUCTION_LENGTH-1 downto 0);
+	addr_count  : in std_logic_vector(COUNTER_LENGTH-1 downto 0);
+	wr_enable   : in std_logic;
+	reset_busy  : out std_logic;
 	
 	reg_pos    : in std_logic_vector(7 downto 0); 
 	reg_tog    : in std_logic;
@@ -22,7 +27,6 @@ end Multimedia_Processor_Unit;
 architecture structural of Multimedia_Processor_Unit is	 
     -- This will be initialized by the FPGA tool from a .mem/.coe file 
 	signal pc_count 	: std_logic_vector(COUNTER_LENGTH-1 downto 0);
-	signal pc_done         : std_logic;
 	signal if_instruc 	: std_logic_vector(INSTRUCTION_LENGTH-1 downto 0);
 	signal id_instruc 	: std_logic_vector(INSTRUCTION_LENGTH-1 downto 0);	
 	
@@ -39,6 +43,11 @@ architecture structural of Multimedia_Processor_Unit is
 	signal ex_rs1			: std_logic_vector(REGISTER_LENGTH-1 downto 0);	
 	signal ex_rd			: std_logic_vector(REGISTER_LENGTH-1 downto 0);
 	
+	signal fw_rs3			: std_logic_vector(REGISTER_LENGTH-1 downto 0);
+	signal fw_rs2			: std_logic_vector(REGISTER_LENGTH-1 downto 0);
+	signal fw_rs1			: std_logic_vector(REGISTER_LENGTH-1 downto 0);	
+	
+
 	signal id_immed		: std_logic_vector(IMMEDIATE_LENGTH-1 downto 0);
 	signal ex_immed		: std_logic_vector(IMMEDIATE_LENGTH-1 downto 0);
 	
@@ -87,16 +96,12 @@ architecture structural of Multimedia_Processor_Unit is
         end;
         
     signal digit_sel   : std_logic := '0';
-    signal write_en    : std_logic_vector(0 downto 0); 
-    signal in_instruc  : std_logic_vector(INSTRUCTION_LENGTH-1 downto 0) := (others => '0');
     
 begin		
-    write_en(0) <= not reset_bar;
-    
     process(clk)
         variable ref_rate : unsigned(20 downto 0) := (others => '0');
     begin
-        if rising_edge(clk) and pc_done = '1' then
+        if rising_edge(clk) then
             ref_rate := ref_rate + 1;
             digit_sel <= ref_rate(1);
         end if;
@@ -124,17 +129,19 @@ begin
 		enable		=> enable,
 		reset_bar 	=> reset_bar,
 		--output
-		pc_count 	=> pc_count,
-		pc_done        => pc_done); 
+		pc_count 	=> pc_count
+		); 
 
-    BLK_MEM : entity work.blk_mem_gen_0(blk_mem_gen_0_arch) -- instruction_file
+    I_FILE : entity work.instruction_file(behavior) -- instruction_file
         port map (
-            clka  => clk,
-            ena => enable,
-            wea => write_en,
-            addra => pc_count,
-            dina  => in_instruc,
-            douta => if_instruc
+            clk         => clk,
+            reset_bar   => reset_bar,
+            pc_count    => pc_count,
+            addr_count  => addr_count,
+            in_instruc  => in_instruct,
+            wr_enable   => wr_enable,
+            out_instruc => if_instruc,
+            reset_busy  => reset_busy
         );
 
     IF_ID : entity work.if_id(behavior)
@@ -155,22 +162,21 @@ begin
 		
 		--outputs(data)
 		opcode	=> id_opcode,
-		id_rs3_ptr	=> id_rs3_ptr,
-		id_rs2_ptr	=> id_rs2_ptr,
-		id_rs1_ptr	=> id_rs1_ptr,
-		id_rd_ptr	=> id_rd_ptr,
-		id_immed	=> id_immed,
+		rs3_ptr	=> id_rs3_ptr,
+		rs2_ptr	=> id_rs2_ptr,
+		rs1_ptr	=> id_rs1_ptr,
+		rd_ptr	=> id_rd_ptr,
+		immed	=> id_immed,
 		read_sel   	=> read_sel,
 		
 		--controls(data)
-		id_wback	=> id_wback);	
+		wback	=> id_wback);	
 
 	R_File : entity work.register_file(behavior)
 		port map (
 		--inputs(data)	
 		clk 		=> clk,
-		read_sel 	=> read_sel,
-		
+        read_sel 	=> read_sel,
 		id_rs3_ptr 	=> id_rs3_ptr, 
 		id_rs2_ptr	=> id_rs2_ptr, 
 		id_rs1_ptr	=> id_rs1_ptr,
@@ -183,7 +189,10 @@ begin
 		--outputs(data)			
 		id_rs3	 	=> id_rs3,
 		id_rs2		=> id_rs2,
-		id_rs1		=> id_rs1);
+		id_rs1		=> id_rs1,
+		reg_pos     => reg_pos,
+		reg_tog     => reg_tog,
+		reg_value   => reg_value);
 		
 	ID_EX : entity work.id_ex(behavior)
 		port map (	
@@ -221,34 +230,42 @@ begin
 		ex_rd_ptr	=> ex_rd_ptr,
 		
 		ex_wback	=> ex_wback); 
-		
+	
 	FOR_WARD : entity work.forward(behavior)
-	   port map (
-	   );
-	   
+		port map (	   
+		--inputs(data)
+		ex_rs3 		=> ex_rs3,
+		ex_rs2		=> ex_rs2,
+		ex_rs1		=> ex_rs1, 
+		
+		ex_rs3_ptr	=> ex_rs3_ptr,
+		ex_rs2_ptr	=> ex_rs2_ptr,
+		ex_rs1_ptr	=> ex_rs1_ptr,	
+		
+	   --forward(data)
+		wb_rd		=> wb_rd,
+		wb_rd_ptr	=> wb_rd_ptr,
+		wb_wback	=> wb_wback,
+		
+		--outputs(data)
+		fw_rs3 		=> fw_rs3,
+		fw_rs2		=> fw_rs2,
+		fw_rs1		=> fw_rs1); 	
 		
 	MMU_ALU : entity work.mmu(behavior)
 		port map ( 
 		--inputs
 		opcode		=> ex_opcode,		
 		
-		in_rs3 		=> ex_rs3,
-		in_rs2		=> ex_rs2,
-		in_rs1		=> ex_rs1,
+		fw_rs3 		=> fw_rs3,
+		fw_rs2		=> fw_rs2,
+		fw_rs1		=> fw_rs1,
 		in_immed	=> ex_immed,
-		
-		rs3_ptr		=> ex_rs3_ptr,
-		rs2_ptr		=> ex_rs2_ptr,
-		rs1_ptr		=> ex_rs1_ptr,
-		--write back
-		wb_rd		=> wb_rd,
-		wb_rd_ptr	=> wb_rd_ptr,
-		in_wback	=> wb_wback,
 		
 		--output
 		out_rd		=> ex_rd);	
 		
-	EX_ID : entity work.ex_wb(behavior) 
+	EX_WB : entity work.ex_wb(behavior) 
 		port map ( 	 
 		--control
 		clk 		=> clk,
