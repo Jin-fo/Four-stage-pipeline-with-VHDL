@@ -7,10 +7,10 @@ entity instruction_loader is
     port (
         clk        : in  std_logic;
         rst_bar  : in  std_logic;
-
+        enable   : in  std_logic;
         -- UART input
         rx_data    : in  std_logic_vector(7 downto 0);
-        rx_ready   : in  std_logic;
+        
 
         -- BRAM interface
         bram_addr  : out std_logic_vector(COUNTER_LENGTH-1 downto 0);
@@ -60,7 +60,7 @@ begin
                 ----------------------------------------------------------------
                 -- UART BYTE ACCUMULATION (only if not done)
                 ----------------------------------------------------------------
-                if rx_ready = '1' and done_reg = '0' then
+                if enable = '1' and done_reg = '0' then
 
                     shift_reg <= shift_reg(23 downto 0) & rx_data;
 

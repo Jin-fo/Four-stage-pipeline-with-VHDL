@@ -134,7 +134,6 @@ begin
         bram_data => instr_data,
         bram_addr => instr_addr,
         bram_we   => wr_enable,
-        load_done => load_done,
 
         -- runtime outputs
         reg_pos    => reg_pos,

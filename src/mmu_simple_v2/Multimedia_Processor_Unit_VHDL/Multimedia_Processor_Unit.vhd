@@ -15,7 +15,6 @@ entity Multimedia_Processor_Unit is
 	bram_addr   : in std_logic_vector(COUNTER_LENGTH-1 downto 0);
 	bram_we     : in std_logic;
 	reset_busy  : out std_logic;
-	load_done   : out std_logic;
 	
 	reg_pos    : in std_logic_vector(7 downto 0); 
 	reg_tog    : in std_logic;
@@ -133,9 +132,6 @@ begin
 		pc_count 	=> pc_count
 		); 
 
-	-- Use unified BRAM interface for instruction_file
-	signal loader_load_done : std_logic;
-
 	I_FILE : entity work.instruction_file(behavior)
 		port map (
 			clk         => clk,
@@ -145,11 +141,8 @@ begin
 			in_instruc  => bram_data,
 			wr_enable   => bram_we,
 			out_instruc => if_instruc,
-			reset_busy  => reset_busy,
-			load_done   => loader_load_done
+			reset_busy  => reset_busy
 		);
-
-	load_done <= loader_load_done;
 
     IF_ID : entity work.if_id(behavior)
         port map (	
