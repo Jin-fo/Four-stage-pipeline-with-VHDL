@@ -35,8 +35,8 @@ set_property IOSTANDARD LVCMOS33 [get_ports {rx}]
 set_property PACKAGE_PIN U7 [get_ports {loaded}]
 set_property IOSTANDARD LVCMOS33 [get_ports {loaded}]
 
-set_property PACKAGE_PIN W7 [get_ports {usart}]
-set_property IOSTANDARD LVCMOS33 [get_ports {usart}]
+set_property PACKAGE_PIN W7 [get_ports {uart}]
+set_property IOSTANDARD LVCMOS33 [get_ports {uart}]
 
 set_property PACKAGE_PIN V8 [get_ports {cpu}]
 set_property IOSTANDARD LVCMOS33 [get_ports {cpu}]

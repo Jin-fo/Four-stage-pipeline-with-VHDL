@@ -4,8 +4,6 @@ use ieee.numeric_std.all;
 
 package numeric_var is 
 --------USART
-    constant CLK_FREQ                   : integer := 100000000;
-    constant BAUD_RATE                  : integer := 921600;
     constant SAMPLE_COUNT               : integer := 8;
 
 --------PROGRAM_COUNTER_CONSTANT-------------------------------------------------
@@ -35,7 +33,4 @@ package numeric_var is
 	constant VALUE16					: integer := 16;
 	constant ADDRESS_LENGTH				: integer := 5;		 
 
---------DEBUG_CONSTANT-------------------------------------------------	  
-	constant PERIOD					: time := 10ns;
-	
 end package;

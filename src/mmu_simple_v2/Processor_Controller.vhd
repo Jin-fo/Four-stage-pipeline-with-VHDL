@@ -20,9 +20,7 @@ entity Processor_Controller is
         -- debug
         reg_pos    : in  std_logic_vector(7 downto 0);
         reg_tog    : in  std_logic;
-        reg_value  : out std_logic_vector(15 downto 0);
-        -- loader debug output
-        debug_loader_addr : out std_logic_vector(COUNTER_LENGTH-1 downto 0)
+        reg_value  : out std_logic_vector(15 downto 0)
     );
 end entity;
 
@@ -150,8 +148,5 @@ begin
 
         reset_busy => rst_busy
     );
-
-    -- Debug output: expose loader's address to top level
-    debug_loader_addr <= instr_addr;
 
 end architecture;
