@@ -20,7 +20,9 @@ entity Processor_Controller is
         -- debug
         reg_pos    : in  std_logic_vector(7 downto 0);
         reg_tog    : in  std_logic;
-        reg_value  : out std_logic_vector(15 downto 0)
+        reg_value  : out std_logic_vector(15 downto 0);
+        -- loader debug output
+        debug_loader_addr : out std_logic_vector(COUNTER_LENGTH-1 downto 0)
     );
 end entity;
 
@@ -29,18 +31,21 @@ architecture structural of Processor_Controller is
     --------------------------------------------------------------------
     -- FSM CONTROL SIGNALS
     --------------------------------------------------------------------
+    signal load_done  : std_logic;
     signal uart_en    : std_logic;
     signal cpu_en     : std_logic;
-    signal uart_en_r  : std_logic;
-    signal cpu_en_r   : std_logic;
-    signal load_done  : std_logic;
-    signal load_done_r : std_logic;
-    
+
     --------------------------------------------------------------------
     -- USART OUTPUT SIGNALS
     --------------------------------------------------------------------
     signal  rx_data   : std_logic_vector(7 downto 0);
     signal rx_ready   : std_logic;
+    
+    --------------------------------------------------------------------
+    -- PC ADDRESS SIGNALS
+    --------------------------------------------------------------------
+    signal pc_count   : std_logic_vector(COUNTER_LENGTH-1 downto 0);
+    signal pc_addr    : std_logic_vector(COUNTER_LENGTH-1 downto 0);
     --------------------------------------------------------------------
     -- ACCUMULATOR → CPU BRAM INTERFACE
     --------------------------------------------------------------------
@@ -48,37 +53,16 @@ architecture structural of Processor_Controller is
     signal instr_data : std_logic_vector(INSTRUCTION_LENGTH-1 downto 0);
     signal wr_enable  : std_logic;
     
-    signal reset_busy : std_logic;
+    signal rst_busy : std_logic;
     signal fsm_enable : std_logic;
     
 begin
     
-    -- Gate FSM enable with reset_busy: only enable FSM when CPU reset is complete
-    fsm_enable <= enable and (not reset_busy);
-    
-    -- Register the control signals with one cycle delay
-    process(clk)
-    begin
-        if rising_edge(clk) then
-            if rst_bar = '0' then
-                uart_en_r <= '0';
-                cpu_en_r  <= '0';
-                load_done_r <= '0';
-            else
-                uart_en_r <= uart_en;
-                cpu_en_r  <= cpu_en;
-                load_done_r <= load_done;
-            end if;
-        end if;
-    end process;
-    
-    -- Output registered control signals
-    loaded <= load_done_r;
-    uart   <= uart_en_r;
-    cpu    <= cpu_en_r;
+    -- Gate FSM enable with rst_busy: only enable FSM when CPU reset is complete
+    fsm_enable <= enable and (not rst_busy);
 
     --------------------------------------------------------------------
-    -- 1. FSM CONTROLLER
+    -- A1. FSM CONTROLLER
     --------------------------------------------------------------------
     CNTRL_FSM : entity work.control_FSM(behavior)
     port map (
@@ -90,7 +74,14 @@ begin
         uart_en   => uart_en,
         cpu_en    => cpu_en
     );
-    
+
+    uart <= uart_en;
+    cpu  <= cpu_en;
+    loaded <= load_done;
+
+    --------------------------------------------------------------------
+    -- A2. USART UNIT
+    --------------------------------------------------------------------
     USART : entity work.USART_unit(structural)
     port map ( 
         clk       => clk,
@@ -103,17 +94,16 @@ begin
         rx_ready    => rx_ready
     );
 
-
     --------------------------------------------------------------------
-    -- 2. ACCUMULATOR (UART → 32-bit instruction stream)
+    -- A3. ACCUMULATOR (UART → 32-bit instruction stream)
     --------------------------------------------------------------------
     INSTRUC_LDR : entity work.instruction_loader(behavior)
     port map (
         clk        => clk,
-        rst_bar  => rst_bar,
-
+        rst_bar    => rst_bar,
+        enable     => rx_ready,
+        
         rx_data    => rx_data,
-        rx_ready   => rx_ready,
         bram_addr  => instr_addr,
         bram_data  => instr_data,
         bram_we    => wr_enable,
@@ -122,7 +112,25 @@ begin
     );
 
     --------------------------------------------------------------------
-    -- 3. CPU CORE (INCLUDES BRAM INSIDE)
+    -- B1. CPU CORE (INCLUDES BRAM INSIDE)
+    --------------------------------------------------------------------
+    P_C : entity work.pc(behavior)				  
+		port map (	 
+		--control
+		clk 		=> clk,	
+		enable		=> cpu_en,
+		reset_bar 	=> rst_bar,
+		--output
+		pc_count 	=> pc_count
+		); 
+
+    --------------------------------------------------------------------
+    -- MUX(cpu_en & rst_busy) = {{xx: A3(instr_addr)}, {10: B1(pc_count)}} → C1(in_addr)
+    --------------------------------------------------------------------
+
+    pc_addr <= pc_count when cpu_en = '1' and rst_busy = '0' else instr_addr; 
+    --------------------------------------------------------------------
+    -- C1. CPU CORE (INCLUDES BRAM INSIDE)
     --------------------------------------------------------------------
     MMU_CPU : entity work.Multimedia_Processor_Unit(structural)
     port map (
@@ -132,7 +140,7 @@ begin
 
         -- bootloader interface
         bram_data => instr_data,
-        bram_addr => instr_addr,
+        bram_addr => pc_addr,
         bram_we   => wr_enable,
 
         -- runtime outputs
@@ -140,7 +148,10 @@ begin
         reg_tog    => reg_tog,
         reg_value  => reg_value,
 
-        reset_busy => reset_busy
+        reset_busy => rst_busy
     );
+
+    -- Debug output: expose loader's address to top level
+    debug_loader_addr <= instr_addr;
 
 end architecture;

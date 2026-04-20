@@ -26,7 +26,7 @@ end Multimedia_Processor_Unit;
 
 architecture structural of Multimedia_Processor_Unit is	 
     -- This will be initialized by the FPGA tool from a .mem/.coe file 
-	signal pc_count 	: std_logic_vector(COUNTER_LENGTH-1 downto 0);
+
 	signal if_instruc 	: std_logic_vector(INSTRUCTION_LENGTH-1 downto 0);
 	signal id_instruc 	: std_logic_vector(INSTRUCTION_LENGTH-1 downto 0);	
 	
@@ -122,22 +122,21 @@ begin
         end if;
     end process;
     
-	P_C : entity work.pc(behavior)				  
-		port map (	 
-		--control
-		clk 		=> clk,	
-		enable		=> enable,
-		reset_bar 	=> reset_bar,
-		--output
-		pc_count 	=> pc_count
-		); 
+	-- P_C : entity work.pc(behavior)				  
+	-- 	port map (	 
+	-- 	--control
+	-- 	clk 		=> clk,	
+	-- 	enable		=> enable,
+	-- 	reset_bar 	=> reset_bar,
+	-- 	--output
+	-- 	pc_count 	=> pc_count
+	-- 	); 
 
 	I_FILE : entity work.instruction_file(behavior)
 		port map (
 			clk         => clk,
 			reset_bar   => reset_bar,
-			pc_count    => pc_count,
-			addr_count  => bram_addr,
+			in_addr    =>  bram_addr,
 			in_instruc  => bram_data,
 			wr_enable   => bram_we,
 			out_instruc => if_instruc,
