@@ -8,6 +8,7 @@ entity register_file is
         clk : in std_logic;
 
         -- IO signals
+        reg_tog    : in std_logic;
         reg_pos   : in std_logic_vector(7 downto 0);  -- [7:3]=reg select, [2:0]=segment select
         reg_value : out std_logic_vector(15 downto 0);
 
@@ -36,24 +37,41 @@ architecture behavior of register_file is
         of std_logic_vector(REGISTER_LENGTH-1 downto 0);
 
     signal REG_FILE         : reg_array := (others => (others => '0'));
-    
+    -- 2-flop synchronizer and edge detector for async reg_tog
+    signal tog_sync_0       : std_logic := '0';
+    signal tog_sync_1       : std_logic := '0';
+    signal tog_sync_prev    : std_logic := '0';
+    signal reg_pos_latched  : std_logic_vector(7 downto 0) := (others => '0');
+
 begin
     ---------------------------------------------------------------------
-    -- Debug read (16-bit slice)
+    -- Debug read (16-bit slice) with 2-flop synchronizer for reg_tog
     ---------------------------------------------------------------------
-    process(reg_pos, REG_FILE)
+    debug_sync : process(clk)
+    begin
+        if rising_edge(clk) then
+            tog_sync_0 <= reg_tog;
+            tog_sync_1 <= tog_sync_0;
+            if (tog_sync_1 = '1' and tog_sync_prev = '0') then
+                reg_pos_latched <= reg_pos;
+            end if;
+            tog_sync_prev <= tog_sync_1;
+        end if;
+    end process debug_sync;
+
+    process(reg_pos_latched, REG_FILE)
         variable v_reg_idx  : integer;
         variable v_seg_idx  : integer;
         variable v_seg_base : integer;
         variable v_reg      : std_logic_vector(REGISTER_LENGTH-1 downto 0);
     begin
-        v_reg_idx := to_integer(unsigned(reg_pos(7 downto 3)));
-        v_seg_idx := to_integer(unsigned(reg_pos(2 downto 0)));
+        v_reg_idx := to_integer(unsigned(reg_pos_latched(7 downto 3)));
+        v_seg_idx := to_integer(unsigned(reg_pos_latched(2 downto 0)));
 
         v_reg := REG_FILE(v_reg_idx);
         v_seg_base := v_seg_idx * 16; 
         reg_value <= v_reg(v_seg_base + 15 downto v_seg_base);
-
+        
     end process;
 
     ------------------------------------------------------------------

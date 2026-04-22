@@ -78,20 +78,49 @@ set_property IOSTANDARD LVCMOS33 [get_ports {reg_pos[0]}]
 ## Outputs - reg_value[15:0]
 ## ============================================================
 set_property PACKAGE_PIN L1  [get_ports {reg_value[15]}]
-set_property PACKAGE_PIN P1  [get_ports {reg_value[14]}]
-set_property PACKAGE_PIN N3  [get_ports {reg_value[13]}]
-set_property PACKAGE_PIN P3  [get_ports {reg_value[12]}]
-set_property PACKAGE_PIN U3  [get_ports {reg_value[11]}]
-set_property PACKAGE_PIN W3  [get_ports {reg_value[10]}]
-set_property PACKAGE_PIN V3  [get_ports {reg_value[9]}]
-set_property PACKAGE_PIN V13 [get_ports {reg_value[8]}]
-set_property PACKAGE_PIN V14 [get_ports {reg_value[7]}]
-set_property PACKAGE_PIN U14 [get_ports {reg_value[6]}]
-set_property PACKAGE_PIN U15 [get_ports {reg_value[5]}]
-set_property PACKAGE_PIN W18 [get_ports {reg_value[4]}]
-set_property PACKAGE_PIN V19 [get_ports {reg_value[3]}]
-set_property PACKAGE_PIN U19 [get_ports {reg_value[2]}]
-set_property PACKAGE_PIN E19 [get_ports {reg_value[1]}]
-set_property PACKAGE_PIN U16 [get_ports {reg_value[0]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {reg_value[15]}]
 
-set_property IOSTANDARD LVCMOS33 [get_ports {reg_value[*]}]
+set_property PACKAGE_PIN P1  [get_ports {reg_value[14]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {reg_value[14]}]
+
+set_property PACKAGE_PIN N3  [get_ports {reg_value[13]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {reg_value[13]}]
+
+set_property PACKAGE_PIN P3  [get_ports {reg_value[12]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {reg_value[12]}]
+
+set_property PACKAGE_PIN U3  [get_ports {reg_value[11]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {reg_value[11]}]
+
+set_property PACKAGE_PIN W3  [get_ports {reg_value[10]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {reg_value[10]}]
+
+set_property PACKAGE_PIN V3  [get_ports {reg_value[9]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {reg_value[9]}]
+
+set_property PACKAGE_PIN V13 [get_ports {reg_value[8]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {reg_value[8]}]
+
+set_property PACKAGE_PIN V14 [get_ports {reg_value[7]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {reg_value[7]}]
+
+set_property PACKAGE_PIN U14 [get_ports {reg_value[6]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {reg_value[6]}]
+
+set_property PACKAGE_PIN U15 [get_ports {reg_value[5]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {reg_value[5]}]
+
+set_property PACKAGE_PIN W18 [get_ports {reg_value[4]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {reg_value[4]}]
+
+set_property PACKAGE_PIN V19 [get_ports {reg_value[3]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {reg_value[3]}]
+
+set_property PACKAGE_PIN U19 [get_ports {reg_value[2]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {reg_value[2]}]
+
+set_property PACKAGE_PIN E19 [get_ports {reg_value[1]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {reg_value[1]}]
+
+set_property PACKAGE_PIN U16 [get_ports {reg_value[0]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {reg_value[0]}]

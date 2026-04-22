@@ -16,6 +16,7 @@ entity Multimedia_Processor_Unit is
 	bram_we     : in std_logic;
 	reset_busy  : out std_logic;
 	
+	reg_tog   : in std_logic;
 	reg_pos    : in std_logic_vector(7 downto 0);
 	reg_value  : out std_Logic_vector(15 downto 0)
 	);
@@ -156,6 +157,7 @@ begin
 
 	R_File : entity work.register_file(behavior)
 		port map (
+		reg_tog     => reg_tog,
 		reg_pos     => reg_pos,
 		reg_value   => reg_value,
 		--inputs(data)

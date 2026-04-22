@@ -22,6 +22,7 @@ Note
 * Avoid uintended arithmetic operation for control signals
 	- infer expensive hardware like multipliers instead of simple control logic.
 
+* constant package vs entity generic
 
 ------------------------------------------------------------------------------------------------
 | Place and Route Files.rpt

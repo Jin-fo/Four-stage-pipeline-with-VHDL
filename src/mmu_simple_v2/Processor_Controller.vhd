@@ -25,10 +25,6 @@ entity Processor_Controller is
 end entity;
 
 architecture structural of Processor_Controller is
-    -- Synchronizer for reg_tog and reg_pos (hardware-safe)
-    signal tog_prev : std_logic := '0';
-    signal reg_pos_latched  : std_logic_vector(7 downto 0) := (others => '0');
-
     --------------------------------------------------------------------
     -- FSM CONTROL SIGNALS
     --------------------------------------------------------------------
@@ -58,17 +54,6 @@ architecture structural of Processor_Controller is
     signal fsm_enable : std_logic;
     
 begin
-    -- Synchronize reg_tog and latch reg_pos (single edge detector)
-    debug : process(clk)
-    begin
-        if rising_edge(clk) then
-            if (reg_tog = '1' and tog_prev = '0') then
-                reg_pos_latched <= reg_pos;
-            end if;
-            tog_prev <= reg_tog;
-        end if;
-    end process;
-    
     -- Gate FSM enable with rst_busy: only enable FSM when CPU reset is complete
     fsm_enable <= enable and (not rst_busy);
 
@@ -155,7 +140,8 @@ begin
         bram_we   => wr_enable,
 
         -- runtime outputs
-        reg_pos    => reg_pos_latched,
+        reg_tog   => reg_tog,
+        reg_pos    => reg_pos,
         reg_value  => reg_value,
 
         reset_busy => rst_busy
