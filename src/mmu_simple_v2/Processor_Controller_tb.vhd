@@ -31,9 +31,9 @@ architecture sim of Processor_Controller_tb is
     
     constant CLK_FREQ    : integer := 100000000;
     constant BAUD_RATE   : integer := 921600;
+    constant CLK_PERIOD  : time := 20 ns;      -- 50 MHz clock
+    constant BAUD_PERIOD : time := (CLK_FREQ / BAUD_RATE) * CLK_PERIOD; 
     
-    constant BAUD_PERIOD : time := (CLK_FREQ / BAUD_RATE) * 1ns; 
-    constant CLK_PERIOD  : time := 1 ns;      -- unchanged (already fast)
     
     --------------------------------------------------------------------
     -- DUT SIGNALS
@@ -158,14 +158,14 @@ begin
         rst_bar <= '0';
         enable  <= '0';
         rx      <= '1';
-        wait for 10 ns;     -- was 100 ns
+        wait for 10 * CLK_PERIOD;     -- was 100 ns
 
         rst_bar <= '1';
-        wait for 10 ns;     -- was 100 ns
+        wait for 10 * CLK_PERIOD;     -- was 100 ns
 
         enable <= '1';
         
-        wait for 100 ns; 
+        wait for 10 * CLK_PERIOD; 
         for i in 0 to 25 loop
             uart_send_instruction(rx, program(i));
             --load_done_tb <= '1';

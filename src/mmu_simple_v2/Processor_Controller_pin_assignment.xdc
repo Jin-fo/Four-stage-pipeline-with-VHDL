@@ -18,7 +18,7 @@ set_property PACKAGE_PIN R2 [get_ports {rst_bar}]
 set_property IOSTANDARD LVCMOS33 [get_ports {rst_bar}]
 
 ## ============================================================
-## Enable (FIXED: must match HDL exactly)
+## Enable (FIXED: must match HDL exactly)s
 ## ============================================================
 set_property PACKAGE_PIN T1 [get_ports {enable}]
 set_property IOSTANDARD LVCMOS33 [get_ports {enable}]
@@ -32,11 +32,11 @@ set_property IOSTANDARD LVCMOS33 [get_ports {rx}]
 ## ============================================================
 ## UART LOAD INSTRUCTION DONE
 ## ============================================================
-set_property PACKAGE_PIN U7 [get_ports {loaded}]
-set_property IOSTANDARD LVCMOS33 [get_ports {loaded}]
-
 set_property PACKAGE_PIN W7 [get_ports {uart}]
 set_property IOSTANDARD LVCMOS33 [get_ports {uart}]
+
+set_property PACKAGE_PIN U7 [get_ports {loaded}]
+set_property IOSTANDARD LVCMOS33 [get_ports {loaded}]
 
 set_property PACKAGE_PIN V8 [get_ports {cpu}]
 set_property IOSTANDARD LVCMOS33 [get_ports {cpu}]

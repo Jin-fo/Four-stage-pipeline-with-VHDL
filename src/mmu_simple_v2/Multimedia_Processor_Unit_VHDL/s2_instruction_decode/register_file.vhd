@@ -38,20 +38,26 @@ architecture behavior of register_file is
 
     signal REG_FILE         : reg_array := (others => (others => '0'));
     signal reg_pos_internal : std_logic_vector(7 downto 0) := (others => '0');
-
+    -- 2-flop synchronizer for reg_tog
+    signal reg_tog_sync_0   : std_logic := '0';
+    signal reg_tog_sync_1   : std_logic := '0';
+    
 begin
-    ------------------------------------------------------------------
-    -- Debug Read
-    ------------------------------------------------------------------
+
     ---------------------------------------------------------------------
-    -- Debug latch
+    -- Synchronize reg_tog and reg_pos
     ---------------------------------------------------------------------
     process(clk)
+        variable reg_tog_sync_1_prev : std_logic := '0';
     begin
         if rising_edge(clk) then
-            if reg_tog = '1' then
+            reg_tog_sync_0 <= reg_tog;
+            reg_tog_sync_1 <= reg_tog_sync_0;
+            -- Rising edge detect on synchronized reg_tog
+            if (reg_tog_sync_1 = '1' and reg_tog_sync_1_prev = '0') then
                 reg_pos_internal <= reg_pos;
             end if;
+            reg_tog_sync_1_prev := reg_tog_sync_1;
         end if;
     end process;
 
