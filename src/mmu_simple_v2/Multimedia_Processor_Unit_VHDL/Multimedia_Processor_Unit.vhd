@@ -16,11 +16,8 @@ entity Multimedia_Processor_Unit is
 	bram_we     : in std_logic;
 	reset_busy  : out std_logic;
 	
-	reg_pos    : in std_logic_vector(7 downto 0); 
-	reg_tog    : in std_logic;
-	reg_value  : out std_Logic_vector(15 downto 0);
-	reg_seven  : out std_logic_vector(6 downto 0);
-	led_ctrl   : out std_logic_vector(3 downto 0)
+	reg_pos    : in std_logic_vector(7 downto 0);
+	reg_value  : out std_Logic_vector(15 downto 0)
 	);
 end Multimedia_Processor_Unit;
 
@@ -69,58 +66,44 @@ architecture structural of Multimedia_Processor_Unit is
 	signal wb_rd_ptr	: std_logic_vector(ADDRESS_LENGTH-1 downto 0);		 
 	signal wb_wback		: std_logic;
 	
-    function binary_to_hex(x : std_logic_vector(3 downto 0))
-           return std_logic_vector is
-           variable seg : std_logic_vector(6 downto 0);
-        begin 
-            case x is
-                when "0000" => seg := "1000000"; -- 0
-                when "0001" => seg := "1111001"; -- 1
-                when "0010" => seg := "0100100"; -- 2
-                when "0011" => seg := "0110000"; -- 3
-                when "0100" => seg := "0011001"; -- 4
-                when "0101" => seg := "0010010"; -- 5
-                when "0110" => seg := "0000010"; -- 6
-                when "0111" => seg := "1111000"; -- 7
-                when "1000" => seg := "0000000"; -- 8
-                when "1001" => seg := "0010000"; -- 9
-                when "1010" => seg := "0001000"; -- A
-                when "1011" => seg := "0000011"; -- B
-                when "1100" => seg := "1000110"; -- C
-                when "1101" => seg := "0100001"; -- D
-                when "1110" => seg := "0000110"; -- E
-                when "1111" => seg := "0001110"; -- F
-                when others => seg := "1111111"; -- blank
-            end case;
-            return seg;
-        end;
-        
-    signal digit_sel   : std_logic := '0';
-    
+    -- function binary_to_hex(x : std_logic_vector(3 downto 0))
+    --        return std_logic_vector is
+    --        variable seg : std_logic_vector(6 downto 0);
+    --     begin 
+	-- 			-- Synchronize reg_tog and latch reg_pos
+	-- 			process(clk)
+	-- 			begin
+	-- 				if rising_edge(clk) then
+	-- 					reg_tog_sync_0 <= reg_tog;
+	-- 					reg_tog_sync_1 <= reg_tog_sync_0;
+	-- 					if (reg_tog_sync_1 = '1' and reg_tog_sync_1_prev = '0') then
+	-- 						reg_pos_latched <= reg_pos;
+	-- 					end if;
+	-- 					reg_tog_sync_1_prev <= reg_tog_sync_1;
+	-- 				end if;
+	-- 			end process;
+    --         case x is
+    --             when "0000" => seg := "1000000"; -- 0
+    --             when "0001" => seg := "1111001"; -- 1
+    --             when "0010" => seg := "0100100"; -- 2
+    --             when "0011" => seg := "0110000"; -- 3
+    --             when "0100" => seg := "0011001"; -- 4
+    --             when "0101" => seg := "0010010"; -- 5
+    --             when "0110" => seg := "0000010"; -- 6
+    --             when "0111" => seg := "1111000"; -- 7
+    --             when "1000" => seg := "0000000"; -- 8
+    --             when "1001" => seg := "0010000"; -- 9
+    --             when "1010" => seg := "0001000"; -- A
+    --             when "1011" => seg := "0000011"; -- B
+    --             when "1100" => seg := "1000110"; -- C
+    --             when "1101" => seg := "0100001"; -- D
+    --             when "1110" => seg := "0000110"; -- E
+    --             when "1111" => seg := "0001110"; -- F
+    --             when others => seg := "1111111"; -- blank
+    --         end case;
+    --         return seg;
+    --     end;
 begin		
-    process(clk)
-        variable ref_rate : unsigned(20 downto 0) := (others => '0');
-    begin
-        if rising_edge(clk) then
-            ref_rate := ref_rate + 1;
-            digit_sel <= ref_rate(1);
-        end if;
-    end process;
-    
-    process(digit_sel, reg_pos)
-        variable reg_pos_lo : std_logic_vector(3 downto 0);
-        variable reg_pos_hi : std_logic_vector(3 downto 0);
-    begin
-        reg_pos_lo := reg_pos(3 downto 0);
-        reg_pos_hi := reg_pos(7 downto 4);
-        if digit_sel = '0' then
-            led_ctrl <= "1110"; -- enable digit 0
-            reg_seven <= binary_to_hex(reg_pos_lo);
-        elsif digit_sel = '1' then
-            led_ctrl <= "1101"; -- enable digit 1
-            reg_seven <= binary_to_hex(reg_pos_hi);
-        end if;
-    end process;
     
 	-- P_C : entity work.pc(behavior)				  
 	-- 	port map (	 
@@ -173,25 +156,24 @@ begin
 
 	R_File : entity work.register_file(behavior)
 		port map (
-		--inputs(data)	
-		clk 		=> clk,
-        read_sel 	=> read_sel,
-		id_rs3_ptr 	=> id_rs3_ptr, 
-		id_rs2_ptr	=> id_rs2_ptr, 
-		id_rs1_ptr	=> id_rs1_ptr,
-		
-		--wback(data)  
-		wb_rd		=> wb_rd,	  
-		wb_rd_ptr	=> wb_rd_ptr,
-		wb_wback	=> wb_wback,	  
-		
-		--outputs(data)			
-		id_rs3	 	=> id_rs3,
-		id_rs2		=> id_rs2,
-		id_rs1		=> id_rs1,
 		reg_pos     => reg_pos,
-		reg_tog     => reg_tog,
-		reg_value   => reg_value);
+		reg_value   => reg_value,
+		--inputs(data)
+		clk         => clk,
+		read_sel    => read_sel,
+		id_rs3_ptr  => id_rs3_ptr,
+		id_rs2_ptr  => id_rs2_ptr,
+		id_rs1_ptr  => id_rs1_ptr,
+
+		--wback(data)
+		wb_rd       => wb_rd,
+		wb_rd_ptr   => wb_rd_ptr,
+		wb_wback    => wb_wback,
+
+		--outputs(data)
+		id_rs3      => id_rs3,
+		id_rs2      => id_rs2,
+		id_rs1      => id_rs1);
 		
 	ID_EX : entity work.id_ex(behavior)
 		port map (	
